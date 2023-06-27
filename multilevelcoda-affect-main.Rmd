@@ -35,7 +35,7 @@ shs <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/StressHealthStu
 destress <- readRDS("/Volumes/shared/Behavioral-med-lab/DESTRESSStudy/Data/destress_daily_ggir.RDS")
 aces <- readRDS("/Volumes/shared/Behavioral-med-lab/ACESStudy/Data/aces_daily_ggir.RDS")
 
-parts5 <- c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg")
+parts <- c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg")
 
 d <- rbind(shs[, .(ID, UID = paste0("S", ID), SurveyDay, 
                    PosAffHA, PosAffLA, NegAffHA, NegAffLA,
@@ -51,8 +51,8 @@ d <- rbind(shs[, .(ID, UID = paste0("S", ID), SurveyDay,
                     Sleepg, WAKEg, MVPAg, LPAg, SBg)])
 d <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAg, LPAg, SBg)])]
 
-composition_imp <- lrEM(d[, parts5, with = FALSE], label = 0,dl = rep(1,5), ini.cov = "multRepl")
-d <- cbind(d[, -parts5, with = FALSE], composition_imp)
+composition_imp <- lrEM(d[, parts, with = FALSE], label = 0,dl = rep(1,5), ini.cov = "multRepl")
+d <- cbind(d[, -parts, with = FALSE], composition_imp)
 
 # make composition
 sbp <- matrix(c(
@@ -61,20 +61,23 @@ sbp <- matrix(c(
   0, 0, 1, -1, -1,
   0, 0, 0, 1, -1), ncol = 5, byrow = TRUE)
 
-mean(d$Sleepg)
-mean(d$WAKEg)
-mean(d$MVPAg)
-mean(d$LPAg)
-mean(d$SBg)
+cilr5 <- compilr(d,
+                 sbp = sbp,
+                 parts = parts,
+                 idvar = "UID")
 
-cilr5 <- compilr(d, sbp = sbp,
-                 parts = parts5, idvar = "UID")
+psych::describe(d$Sleepg)
+psych::describe(d$WAKEg)
+psych::describe(d$MVPAg)
+psych::describe(d$LPAg)
+psych::describe(d$SBg)
+
+
 ```
 
 ## HAPA
 
 ```{r}
-
 mhapa <- brmcoda(cilr5,
               PosAffHANextDay ~ bilr1 + bilr2 + bilr3 + bilr4 +
                wilr1 + wilr2 + wilr3 + wilr4 + PosAffHA + (1 | UID), 
@@ -86,41 +89,51 @@ mhapa <- brmcoda(cilr5,
              backend = "cmdstanr"
 )
 
-mhapa <- brmcoda(cilr5,
-              PosAffHA ~ bilr1 + bilr2 + bilr3 + bilr4 +
-               wilr1 + wilr2 + wilr3 + wilr4 + (1 | UID), 
-             cores = 4,
-             chains = 4,
-             iter = 3000,
-             warmup = 500,
-             seed = 123,
-             backend = "cmdstanr"
-)
+# mhapa <- brmcoda(cilr5,
+#               PosAffHA ~ bilr1 + bilr2 + bilr3 + bilr4 +
+#                wilr1 + wilr2 + wilr3 + wilr4 + (1 | UID), 
+#              cores = 4,
+#              chains = 4,
+#              iter = 3000,
+#              warmup = 500,
+#              seed = 123,
+#              backend = "cmdstanr"
+# )
 
 summary(mhapa$Model)
+
+registerDoFuture()
+plan(multisession, workers = 5)
 
 mhapa_sub <- substitution(
   mhapa,
   delta = c(1:30),
   level = c("between", "within"),
-  type = "conditional")
+  ref = "clustermean")
 
-plotsub(mhapa_sub$BetweenSub$Sleepg, "Sleep", "HAPA")
-plotsub(mhapa_sub$BetweenSub$WAKEg, "WAKEg", "HAPA")
-plotsub(mhapa_sub$BetweenSub$MVPAg, "MVPAg", "HAPA")
-plotsub(mhapa_sub$BetweenSub$LPAg, "LPAg", "HAPA")
-plotsub(mhapa_sub$BetweenSub$SBg, "SBg", "HAPA")
+registerDoSEQ()
 
-plotsub(mhapa_sub$WithinSub$Sleepg, "Sleep", "HAPA")
-plotsub(mhapa_sub$WithinSub$WAKEg, "WAKEg", "HAPA")
-plotsub(mhapa_sub$WithinSub$MVPAg, "MVPAg", "HAPA")
-plotsub(mhapa_sub$WithinSub$LPAg, "LPAg", "HAPA")
-plotsub(mhapa_sub$WithinSub$SBg, "SBg", "HAPA")
+mhapa_sub <- substitution(
+  mhapa,
+  delta = c(1:30),
+  level = c("between", "within"),
+  ref = "grandmean")
+
+summary(mhapa_sub, delta = 30)
+
+plot(mhapa_sub, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mhapa_sub, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mhapa_sub, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mhapa_sub, to = "LPAg", ref = "grandmean", level = "between")
+plot(mhapa_sub, to = "SBg", ref = "grandmean", level = "between")
+
+plot(mhapa_sub, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mhapa_sub, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mhapa_sub, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mhapa_sub, to = "LPAg", ref = "grandmean", level = "within")
+plot(mhapa_sub, to = "SBg", ref = "grandmean", level = "within")
 
 ```
-
-
-
 
 ## LAPA
 
@@ -141,19 +154,20 @@ mlapa_sub <- substitution(
   mlapa,
   delta = c(1:30),
   level = c("between", "within"),
-  type = "conditional")
+  ref = "grandmean")
 
-plotsub(mlapa_sub$BetweenSub$Sleepg, "Sleep", "LAPA")
-plotsub(mlapa_sub$BetweenSub$WAKEg, "WAKEg", "LAPA")
-plotsub(mlapa_sub$BetweenSub$MVPAg, "MVPAg", "LAPA")
-plotsub(mlapa_sub$BetweenSub$LPAg, "LPAg", "LAPA")
-plotsub(mlapa_sub$BetweenSub$SBg, "SBg", "LAPA")
+summary(mlapa_sub, delta = 30)
+plot(mlapa_sub, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mlapa_sub, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mlapa_sub, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mlapa_sub, to = "LPAg", ref = "grandmean", level = "between")
+plot(mlapa_sub, to = "SBg", ref = "grandmean", level = "between")
 
-plotsub(mlapa_sub$WithinSub$Sleepg, "Sleep", "LAPA")
-plotsub(mlapa_sub$WithinSub$WAKEg, "WAKEg", "LAPA")
-plotsub(mlapa_sub$WithinSub$MVPAg, "MVPAg", "LAPA")
-plotsub(mlapa_sub$WithinSub$LPAg, "LPAg", "LAPA")
-plotsub(mlapa_sub$WithinSub$SBg, "SBg", "LAPA")
+plot(mlapa_sub, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mlapa_sub, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mlapa_sub, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mlapa_sub, to = "LPAg", ref = "grandmean", level = "within")
+plot(mlapa_sub, to = "SBg", ref = "grandmean", level = "within")
 
 ```
 
@@ -188,19 +202,20 @@ mhana_sub <- substitution(
   mhana,
   delta = c(1:30),
   level = c("between", "within"),
-  type = "conditional")
+  ref = "grandmean")
 
-plotsub(mhana_sub$BetweenSub$Sleepg, "Sleep", "HANA")
-plotsub(mhana_sub$BetweenSub$WAKEg, "WAKEg", "HANA")
-plotsub(mhana_sub$BetweenSub$MVPAg, "MVPAg", "HANA")
-plotsub(mhana_sub$BetweenSub$LPAg, "LPAg", "HANA")
-plotsub(mhana_sub$BetweenSub$SBg, "SBg", "HANA")
+summary(mhana_sub, delta = 30)
+plot(mhana_sub, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mhana_sub, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mhana_sub, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mhana_sub, to = "LPAg", ref = "grandmean", level = "between")
+plot(mhana_sub, to = "SBg", ref = "grandmean", level = "between")
 
-plotsub(mhana_sub$WithinSub$Sleepg, "Sleep", "HANA")
-plotsub(mhana_sub$WithinSub$WAKEg, "WAKEg", "HANA")
-plotsub(mhana_sub$WithinSub$MVPAg, "MVPAg", "HANA")
-plotsub(mhana_sub$WithinSub$LPAg, "LPAg", "HANA")
-plotsub(mhana_sub$WithinSub$SBg, "SBg", "HANA")
+plot(mhana_sub, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mhana_sub, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mhana_sub, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mhana_sub, to = "LPAg", ref = "grandmean", level = "within")
+plot(mhana_sub, to = "SBg", ref = "grandmean", level = "within")
 
 ```
 
@@ -223,18 +238,19 @@ mlana_sub <- substitution(
   mlana,
   delta = c(1:30),
   level = c("between", "within"),
-  type = "conditional")
+  ref = "grandmean")
 
-plotsub(mlana_sub$BetweenSub$Sleepg, "Sleep", "LANA")
-plotsub(mlana_sub$BetweenSub$WAKEg, "WAKEg", "LANA")
-plotsub(mlana_sub$BetweenSub$MVPAg, "MVPAg", "LANA")
-plotsub(mlana_sub$BetweenSub$LPAg, "LPAg", "LANA")
-plotsub(mlana_sub$BetweenSub$SBg, "SBg", "LANA")
+summary(mlana_sub, delta = 30)
+plot(mlana_sub, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mlana_sub, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mlana_sub, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mlana_sub, to = "LPAg", ref = "grandmean", level = "between")
+plot(mlana_sub, to = "SBg", ref = "grandmean", level = "between")
 
-plotsub(mlana_sub$WithinSub$Sleepg, "Sleep", "LANA")
-plotsub(mlana_sub$WithinSub$WAKEg, "WAKEg", "LANA")
-plotsub(mlana_sub$WithinSub$MVPAg, "MVPAg", "LANA")
-plotsub(mlana_sub$WithinSub$LPAg, "LPAg", "LANA")
-plotsub(mlana_sub$WithinSub$SBg, "SBg", "LANA")
+plot(mlana_sub, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mlana_sub, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mlana_sub, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mlana_sub, to = "LPAg", ref = "grandmean", level = "within")
+plot(mlana_sub, to = "SBg", ref = "grandmean", level = "within")
 ```
 

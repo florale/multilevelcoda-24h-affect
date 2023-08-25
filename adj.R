@@ -64,32 +64,31 @@ summary(mlana_ss_adj)
 plan(multisession, workers = 5)
 mhapa_ss_sub_adj <- substitution(
   mhapa_ss_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlapa_ss_sub_adj <- substitution(
   mlapa_ss_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mhana_ss_sub_adj <- substitution(
   mhana_ss_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlana_ss_sub_adj <- substitution(
   mlana_ss_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
-
 plan(sequential)
 
 ## substitution summary 
@@ -218,29 +217,29 @@ summary(mlana_ss_lag_adj)
 plan(multisession, workers = 5)
 mhapa_ss_lag_sub_adj <- substitution(
   mhapa_ss_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlapa_ss_lag_sub_adj <- substitution(
   mlapa_ss_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mhana_ss_lag_sub_adj <- substitution(
   mhana_ss_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlana_ss_lag_sub_adj <- substitution(
   mlana_ss_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
@@ -305,7 +304,7 @@ plot(mlana_ss_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
 plot(mlana_ss_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
 
 # Wake-Wake - Next day outcome -------------------------
-mhapa_ww_adj <- brmcoda(cilr,
+mhapa_ww_adj <- brmcoda(cilrw,
                          PosAffHANextDay ~ bilr1 + bilr2 + bilr3 + bilr4 +
                            wilr1 + wilr2 + wilr3 + wilr4 + 
                            Age + Female + RACE + BMI + SES_1 + 
@@ -319,7 +318,7 @@ mhapa_ww_adj <- brmcoda(cilr,
                          backend = "cmdstanr"
 )
 
-mlapa_ww_adj <- brmcoda(cilr,
+mlapa_ww_adj <- brmcoda(cilrw,
                          PosAffLANextDay ~ bilr1 + bilr2 + bilr3 + bilr4 +
                            wilr1 + wilr2 + wilr3 + wilr4 +
                           Age + Female + RACE + BMI + SES_1 + 
@@ -333,7 +332,7 @@ mlapa_ww_adj <- brmcoda(cilr,
                          backend = "cmdstanr"
 )
 
-mhana_ww_adj <- brmcoda(cilr,
+mhana_ww_adj <- brmcoda(cilrw,
                          NegAffHANextDay ~ bilr1 + bilr2 + bilr3 + bilr4 +
                            wilr1 + wilr2 + wilr3 + wilr4 +
                           Age + Female + RACE + BMI + SES_1 + 
@@ -372,29 +371,29 @@ summary(mlana_ww_adj)
 plan(multisession, workers = 5)
 mhapa_ww_sub_adj <- substitution(
   mhapa_ww_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlapa_ww_sub_adj <- substitution(
   mlapa_ww_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mhana_ww_sub_adj <- substitution(
   mhana_ww_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlana_ww_sub_adj <- substitution(
   mlana_ww_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
@@ -530,29 +529,29 @@ summary(mlana_ww_lag_adj)
 plan(multisession, workers = 5)
 mhapa_ww_lag_sub_adj <- substitution(
   mhapa_ww_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlapa_ww_lag_sub_adj <- substitution(
   mlapa_ww_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mhana_ww_lag_sub_adj <- substitution(
   mhana_ww_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 
 mlana_ww_lag_sub_adj <- substitution(
   mlana_ww_lag_adj,
-  # delta = c(1:60),
-  delta = c(30),
+  delta = c(1:60),
+  # delta = c(30),
   level = c("between", "within"),
   ref = "grandmean")
 

@@ -132,12 +132,19 @@ d[, c("PosAffHANextDay", "PosAffLANextDay", "NegAffHANextDay", "NegAffLANextDay"
         .(PosAffHADay, PosAffLADay, NegAffHADay, NegAffLADay, STRESSDay),
         on = c("UID", "SurveyDay", "Survey")]]
 
-# recode race
+# recode covariates
 d[, RACE3G := NA]
 d[, RACE3G := ifelse(RACE == "Asian", "Asian", RACE3G)]
 d[, RACE3G := ifelse(RACE == "White/European", "White/European", RACE3G)]
 d[, RACE3G := ifelse(RACE %in% c("Other", "Indian subcontinent", "Indigenous or Torres Strait Islander"), "Other", RACE3G)]
 d[, RACE3G := as.factor(RACE3G)]
+
+d[, AUDITCat := as.factor(AUDITCat)]
+
+d[, CurrentWork := as.integer(CurrentWork == "Working")]
+d[, SmokingStatus := as.integer(SmokingStatus == "Never")]
+d[, CurrentSchool := as.integer(CurrentSchool == "In School")]
+
 
 # composition
 sbp <- matrix(c(

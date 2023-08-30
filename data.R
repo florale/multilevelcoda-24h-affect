@@ -148,6 +148,10 @@ d[, RACE3G := ifelse(RACE == "White/European", "White/European", RACE3G)]
 d[, RACE3G := ifelse(RACE %in% c("Other", "Indian subcontinent", "Indigenous or Torres Strait Islander"), "Other", RACE3G)]
 d[, RACE3G := as.factor(RACE3G)]
 
+d[, WeekDay := NA]
+d[, WeekDay := ifelse(DayofWeek %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"), 1, WeekDay)]
+d[, WeekDay := ifelse(DayofWeek %in% c("Saturday", "Sunday"), 0, WeekDay)]
+
 d[, AUDITCat := as.factor(AUDITCat)]
 d[, StudyID := as.factor(StudyID)]
 
@@ -214,8 +218,18 @@ parts_ww_next <- c("SleepgNextDay", "WAKEgNextDay", "MVPAgNextDay", "LPAgNextDay
 zPatterns(d[, parts_ww_next, with = FALSE], label = 0)
 zPatterns(d[, parts_ww_next, with = FALSE], label = NA)
 
-dnext <- d[WAKEgNextDay > 0]
-dnext <- dnext[complete.cases(dnext[, .(SleepgNextDay, WAKEgNextDay, MVPAgNextDay, LPAgNextDay, SBgNextDay)])]
+dnext_lag <- cbind(cilrw$TotalILR, cilrw$data)
+setnames(dnext_lag, "ilr1", "ilr1_lag")
+setnames(dnext_lag, "ilr2", "ilr2_lag")
+setnames(dnext_lag, "ilr3", "ilr3_lag")
+setnames(dnext_lag, "ilr4", "ilr4_lag")
+
+dnext <- d[complete.cases(d[, .(SleepgNextDay, WAKEgNextDay, MVPAgNextDay, LPAgNextDay, SBgNextDay)])]
+dnext <- merge(dnext, 
+               dnext_lag[, .(UID, Survey, SurveyDay, ilr1_lag, ilr2_lag, ilr3_lag, ilr4_lag)], 
+               by = c("UID", "Survey", "SurveyDay"), all.x = TRUE)
+
+dnext <- dnext[WAKEgNextDay > 0]
 
 cilrw_next <- compilr(dnext,
                       sbp = sbp,
@@ -228,7 +242,17 @@ parts_ss_next <- c("Sleepg", "WAKEg", "MVPAgNextDay", "LPAgNextDay", "SBgNextDay
 zPatterns(d[, parts_ss_next, with = FALSE], label = 0)
 zPatterns(d[, parts_ss_next, with = FALSE], label = NA)
 
+dsnext_lag <- cbind(cilrs$TotalILR, cilrs$data)
+setnames(dsnext_lag, "ilr1", "ilr1_lag")
+setnames(dsnext_lag, "ilr2", "ilr2_lag")
+setnames(dsnext_lag, "ilr3", "ilr3_lag")
+setnames(dsnext_lag, "ilr4", "ilr4_lag")
+
 dsnext <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAgNextDay, LPAgNextDay, SBgNextDay)])]
+dsnext <- merge(dsnext, 
+                dsnext_lag[, .(UID, Survey, SurveyDay, ilr1_lag, ilr2_lag, ilr3_lag, ilr4_lag)], 
+                by = c("UID", "Survey", "SurveyDay"), all.x = TRUE)
+
 cilrs_next <- compilr(dsnext,
                       sbp = sbp,
                       parts = parts_ss_next,

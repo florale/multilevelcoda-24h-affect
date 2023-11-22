@@ -19,7 +19,7 @@ mlapa_ss_lag_adj <- brmcoda(cilrs,
                             PosAffLADay ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               WPosAffLALagDay +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -33,7 +33,7 @@ mhana_ss_lag_adj <- brmcoda(cilrs,
                             NegAffHADay ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               WNegAffHALagDay +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -47,7 +47,7 @@ mlana_ss_lag_adj <- brmcoda(cilrs,
                             NegAffLADay ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               WNegAffLALagDay +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -165,10 +165,11 @@ mhapa_ww_lag_adj <- brmcoda(cilrw,
                             PosAffHADayLead ~ 
                               bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 + 
-                              # WPosAffHADay + 
+                              # WPosAffHADay +
                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-                              (1 + wilr1 + wilr2 + wilr3 + wilr4 + WPosAffHADay| UID), 
+                              # (1 + wilr1 + wilr2 + wilr3 + wilr4 + WPosAffHADay| UID), 
+                              (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
                             chains = 4,
                             iter = 6000,
@@ -184,7 +185,8 @@ mlapa_ww_lag_adj <- brmcoda(cilrw,
                               # WPosAffLADay +
                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-                              (1 + wilr1 + wilr2 + wilr3 + wilr4 + WPosAffLADay | UID), 
+                              # (1 + wilr1 + wilr2 + wilr3 + wilr4 + WPosAffLADay | UID), 
+                            (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
                             chains = 4,
                             iter = 6000,
@@ -200,7 +202,8 @@ mhana_ww_lag_adj <- brmcoda(cilrw,
                               # WNegAffHADay +
                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-                              (1 + wilr1 + wilr2 + wilr3 + wilr4 + WNegAffHADay | UID), 
+                              # (1 + wilr1 + wilr2 + wilr3 + wilr4 + WNegAffHADay | UID), 
+                            (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
                             chains = 4,
                             iter = 6000,
@@ -216,7 +219,8 @@ mlana_ww_lag_adj <- brmcoda(cilrw,
                               # WNegAffLADay +
                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-                              (1 + wilr1 + wilr2 + wilr3 + wilr4 + WNegAffLADay | UID), 
+                              # (1 + wilr1 + wilr2 + wilr3 + wilr4 + WNegAffLADay | UID), 
+                            (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
                             chains = 4,
                             iter = 6000,
@@ -282,7 +286,6 @@ plot(mhapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
 plot(mhapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
 plot(mhapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
 
-
 plot(mlapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
 plot(mlapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
 plot(mlapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
@@ -295,7 +298,6 @@ plot(mlapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
 plot(mlapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
 plot(mlapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
 
-
 plot(mhana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
 plot(mhana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
 plot(mhana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
@@ -307,7 +309,6 @@ plot(mhana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
 plot(mhana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
 plot(mhana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
 plot(mhana_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
-
 
 plot(mlana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
 plot(mlana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
@@ -498,7 +499,7 @@ mhapa_se_lag_adj <- brmcoda(cilrse,
                             PosAffHA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WPosAffHADayLag +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -512,7 +513,7 @@ mlapa_se_lag_adj <- brmcoda(cilrse,
                             PosAffLA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WPosAffLADayLag +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -526,7 +527,7 @@ mhana_se_lag_adj <- brmcoda(cilrse,
                             NegAffHA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WNegAffHADayLag +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -540,7 +541,7 @@ mlana_se_lag_adj <- brmcoda(cilrse,
                             NegAffLA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WNegAffLADayLag +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -606,7 +607,7 @@ mhapa_ss_lag_adj <- brmcoda(cilrse,
                             PosAffHA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WPosAffHAlag1 + 
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -620,7 +621,7 @@ mlapa_ss_lag_adj <- brmcoda(cilrse,
                             PosAffLA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WPosAffLAlag1 +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -634,7 +635,7 @@ mhana_ss_lag_adj <- brmcoda(cilrse,
                             NegAffHA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WNegAffHAlag1 +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -648,7 +649,7 @@ mlana_ss_lag_adj <- brmcoda(cilrse,
                             NegAffLA ~ bilr1 + bilr2 + bilr3 + bilr4 +
                               wilr1 + wilr2 + wilr3 + wilr4 +
                               # WNegAffLAlag1 +
-                              Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
                               (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
                             cores = 4,
@@ -703,177 +704,177 @@ summary(mlapa_ss_lag_sub_adj, delta = 30)
 summary(mhana_ss_lag_sub_adj, delta = 30)
 summary(mlana_ss_lag_sub_adj, delta = 30)
 
-# # Wake-Wake - Next day morning outcome adj for prev day -------------------------
-# cilrwm <- compilr(d[Survey == "Morning"], sbp = sbp,
-#                   idvar = "UID",
-#                   parts = part_ww, total = 1440)
-# mhapa_wm_lag_adj <- brmcoda(cilrwm,
-#                             PosAffHALead ~ 
-#                               bilr1 + bilr2 + bilr3 + bilr4 +
-#                               wilr1 + wilr2 + wilr3 + wilr4 + 
-#                               WPosAffHADay + 
-#                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
-#                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-#                               (1 + wilr1 + wilr2 + wilr3 + wilr4 + WPosAffHADay| UID), 
-#                             cores = 4,
-#                             chains = 4,
-#                             iter = 3000,
-#                             # warmup = 250,
-#                             seed = 123,
-#                             backend = "cmdstanr"
-# )
-# 
-# mlapa_wm_lag_adj <- brmcoda(cilrwm,
-#                             PosAffLADayLead ~ 
-#                               bilr1 + bilr2 + bilr3 + bilr4 +
-#                               wilr1 + wilr2 + wilr3 + wilr4 + 
-#                               WPosAffLADay +
-#                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
-#                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-#                               (1 + wilr1 + wilr2 + wilr3 + wilr4 + WPosAffLADay | UID), 
-#                             cores = 4,
-#                             chains = 4,
-#                             iter = 3000,
-#                             # warmup = 250,
-#                             seed = 123,
-#                             backend = "cmdstanr"
-# )
-# 
-# mhana_wm_lag_adj <- brmcoda(cilrwm,
-#                             NegAffHADayLead ~ 
-#                               bilr1 + bilr2 + bilr3 + bilr4 +
-#                               wilr1 + wilr2 + wilr3 + wilr4 + 
-#                               WNegAffHADay +
-#                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
-#                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-#                               (1 + wilr1 + wilr2 + wilr3 + wilr4 + WNegAffHADay | UID), 
-#                             cores = 4,
-#                             chains = 4,
-#                             iter = 3000,
-#                             # warmup = 250,
-#                             seed = 123,
-#                             backend = "cmdstanr"
-# )
-# 
-# mlana_wm_lag_adj <- brmcoda(cilrwm,
-#                             NegAffLADayLead ~ 
-#                               bilr1 + bilr2 + bilr3 + bilr4 +
-#                               wilr1 + wilr2 + wilr3 + wilr4 + 
-#                               WNegAffLADay +
-#                               Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
-#                               CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
-#                               (1 + wilr1 + wilr2 + wilr3 + wilr4 + WNegAffLADay | UID), 
-#                             cores = 4,
-#                             chains = 4,
-#                             iter = 3000,
-#                             # warmup = 250,
-#                             seed = 123,
-#                             backend = "cmdstanr"
-# )
-# 
-# 
-# ## brmcoda summary
-# summary(mhapa_wm_lag_adj)
-# summary(mlapa_wm_lag_adj)
-# summary(mhana_wm_lag_adj)
-# summary(mlana_wm_lag_adj)
-# 
-# ## substitution
-# plan(multisession, workers = 5)
-# mhapa_wm_lag_sub_adj <- substitution(
-#   mhapa_wm_lag_adj,
-#   # delta = c(1:60),
-#   delta = c(60),
-#   level = c("between", "within"),
-#   ref = "grandmean")
-# 
-# mlapa_wm_lag_sub_adj <- substitution(
-#   mlapa_wm_lag_adj,
-#   # delta = c(1:60),
-#   delta = c(60),
-#   level = c("between", "within"),
-#   ref = "grandmean")
-# 
-# mhana_wm_lag_sub_adj <- substitution(
-#   mhana_wm_lag_adj,
-#   # delta = c(1:60),
-#   delta = c(60),
-#   level = c("between", "within"),
-#   ref = "grandmean")
-# 
-# mlana_wm_lag_sub_adj <- substitution(
-#   mlana_wm_lag_adj,
-#   # delta = c(1:60),
-#   delta = c(60),
-#   level = c("between", "within"),
-#   ref = "grandmean")
-# plan(sequential)
-# 
-# ## substitution summary 
-# summary(mhapa_wm_lag_sub_adj, delta = 60)
-# summary(mlapa_wm_lag_sub_adj, delta = 60)
-# summary(mhana_wm_lag_sub_adj, delta = 60)
-# summary(mlana_wm_lag_sub_adj, delta = 60)
-# 
-# ## substitution plot
-# plot(mhapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
-# plot(mhapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
-# plot(mhapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
-# plot(mhapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
-# plot(mhapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "between")
-# 
-# plot(mhapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
-# plot(mhapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
-# plot(mhapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
-# plot(mhapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
-# plot(mhapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
-# 
-# 
-# plot(mlapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
-# plot(mlapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
-# plot(mlapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
-# plot(mlapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
-# plot(mlapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "between")
-# 
-# plot(mlapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
-# plot(mlapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
-# plot(mlapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
-# plot(mlapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
-# plot(mlapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
-# 
-# 
-# plot(mhana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
-# plot(mhana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
-# plot(mhana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
-# plot(mhana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
-# plot(mhana_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "between")
-# 
-# plot(mhana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
-# plot(mhana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
-# plot(mhana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
-# plot(mhana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
-# plot(mhana_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
-# 
-# 
-# plot(mlana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
-# plot(mlana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
-# plot(mlana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
-# plot(mlana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
-# plot(mlana_ww_sub_adj, to = "SBg", ref = "grandmean", level = "between")
-# 
-# plot(mlana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
-# plot(mlana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
-# plot(mlana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
-# plot(mlana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
-# plot(mlana_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
-# 
-# 
-# 
+# Wake-Wake - Next day morning outcome adj for prev day -------------------------
+cilrwm <- compilr(d[Survey == "Morning"], sbp = sbp,
+                  idvar = "UID",
+                  parts = part_ww, total = 1440)
+mhapa_wm_lag_adj <- brmcoda(cilrw,
+                            PosAffHALead ~
+                              bilr1 + bilr2 + bilr3 + bilr4 +
+                              wilr1 + wilr2 + wilr3 + wilr4 +
+                              # WPosAffHADay +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
+                              CurrentWork + CurrentSchool + SmokingStatus + AUDITCat +
+                              (1 + wilr1 + wilr2 + wilr3 + wilr4| UID),
+                            cores = 4,
+                            chains = 4,
+                            iter = 3000,
+                            # warmup = 250,
+                            seed = 123,
+                            backend = "cmdstanr"
+)
+
+mlapa_wm_lag_adj <- brmcoda(cilrw,
+                            PosAffLADayLead ~
+                              bilr1 + bilr2 + bilr3 + bilr4 +
+                              wilr1 + wilr2 + wilr3 + wilr4 +
+                              # WPosAffLADay +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
+                              CurrentWork + CurrentSchool + SmokingStatus + AUDITCat +
+                              (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID),
+                            cores = 4,
+                            chains = 4,
+                            iter = 3000,
+                            # warmup = 250,
+                            seed = 123,
+                            backend = "cmdstanr"
+)
+
+mhana_wm_lag_adj <- brmcoda(cilrw,
+                            NegAffHADayLead ~
+                              bilr1 + bilr2 + bilr3 + bilr4 +
+                              wilr1 + wilr2 + wilr3 + wilr4 +
+                              # WNegAffHADay +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
+                              CurrentWork + CurrentSchool + SmokingStatus + AUDITCat +
+                              (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID),
+                            cores = 4,
+                            chains = 4,
+                            iter = 3000,
+                            # warmup = 250,
+                            seed = 123,
+                            backend = "cmdstanr"
+)
+
+mlana_wm_lag_adj <- brmcoda(cilrw,
+                            NegAffLADayLead ~
+                              bilr1 + bilr2 + bilr3 + bilr4 +
+                              wilr1 + wilr2 + wilr3 + wilr4 +
+                              # WNegAffLADay +
+                              Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
+                              CurrentWork + CurrentSchool + SmokingStatus + AUDITCat +
+                              (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID),
+                            cores = 4,
+                            chains = 4,
+                            iter = 3000,
+                            # warmup = 250,
+                            seed = 123,
+                            backend = "cmdstanr"
+)
+
+
+## brmcoda summary
+summary(mhapa_wm_lag_adj)
+summary(mlapa_wm_lag_adj)
+summary(mhana_wm_lag_adj)
+summary(mlana_wm_lag_adj)
+
+## substitution
+plan(multisession, workers = 5)
+mhapa_wm_lag_sub_adj <- substitution(
+  mhapa_wm_lag_adj,
+  # delta = c(1:60),
+  delta = c(60),
+  level = c("between", "within"),
+  ref = "grandmean")
+
+mlapa_wm_lag_sub_adj <- substitution(
+  mlapa_wm_lag_adj,
+  # delta = c(1:60),
+  delta = c(60),
+  level = c("between", "within"),
+  ref = "grandmean")
+
+mhana_wm_lag_sub_adj <- substitution(
+  mhana_wm_lag_adj,
+  # delta = c(1:60),
+  delta = c(60),
+  level = c("between", "within"),
+  ref = "grandmean")
+
+mlana_wm_lag_sub_adj <- substitution(
+  mlana_wm_lag_adj,
+  # delta = c(1:60),
+  delta = c(60),
+  level = c("between", "within"),
+  ref = "grandmean")
+plan(sequential)
+
+## substitution summary
+summary(mhapa_wm_lag_sub_adj, delta = 60)
+summary(mlapa_wm_lag_sub_adj, delta = 60)
+summary(mhana_wm_lag_sub_adj, delta = 60)
+summary(mlana_wm_lag_sub_adj, delta = 60)
+
+## substitution plot
+plot(mhapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mhapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mhapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mhapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
+plot(mhapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "between")
+
+plot(mhapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mhapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mhapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mhapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
+plot(mhapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
+
+
+plot(mlapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mlapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mlapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mlapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
+plot(mlapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "between")
+
+plot(mlapa_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mlapa_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mlapa_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mlapa_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
+plot(mlapa_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
+
+
+plot(mhana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mhana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mhana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mhana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
+plot(mhana_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "between")
+
+plot(mhana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mhana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mhana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mhana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
+plot(mhana_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
+
+
+plot(mlana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "between")
+plot(mlana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "between")
+plot(mlana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "between")
+plot(mlana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "between")
+plot(mlana_ww_sub_adj, to = "SBg", ref = "grandmean", level = "between")
+
+plot(mlana_ww_lag_sub_adj, to = "Sleepg", ref = "grandmean", level = "within")
+plot(mlana_ww_lag_sub_adj, to = "WAKEg", ref = "grandmean", level = "within")
+plot(mlana_ww_lag_sub_adj, to = "MVPAg", ref = "grandmean", level = "within")
+plot(mlana_ww_lag_sub_adj, to = "LPAg", ref = "grandmean", level = "within")
+plot(mlana_ww_lag_sub_adj, to = "SBg", ref = "grandmean", level = "within")
+
+
+
 # # Wake-Wake - Next day outcome -------------------------
 # mhapa_ww_adj <- brmcoda(cilrw,
 #                         PosAffHADayLead ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 + 
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,
@@ -887,7 +888,7 @@ summary(mlana_ss_lag_sub_adj, delta = 30)
 # mlapa_ww_adj <- brmcoda(cilrw,
 #                         PosAffLADayLead ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 +
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,
@@ -901,7 +902,7 @@ summary(mlana_ss_lag_sub_adj, delta = 30)
 # mhana_ww_adj <- brmcoda(cilrw,
 #                         NegAffHADayLead ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 +
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,
@@ -915,7 +916,7 @@ summary(mlana_ss_lag_sub_adj, delta = 30)
 # mlana_ww_adj <- brmcoda(cilrw,
 #                         NegAffLADayLead ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 +
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,
@@ -1028,7 +1029,7 @@ summary(mlana_ss_lag_sub_adj, delta = 30)
 # mhapa_ss_adj <- brmcoda(cilrs,
 #                         PosAffHADay ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 +
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,
@@ -1041,7 +1042,7 @@ summary(mlana_ss_lag_sub_adj, delta = 30)
 # mlapa_ss_adj <- brmcoda(cilrs,
 #                         PosAffLADay ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 +
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,
@@ -1054,7 +1055,7 @@ summary(mlana_ss_lag_sub_adj, delta = 30)
 # mhana_ss_adj <- brmcoda(cilrs,
 #                         NegAffHADay ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 +
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,
@@ -1067,7 +1068,7 @@ summary(mlana_ss_lag_sub_adj, delta = 30)
 # mlana_ss_adj <- brmcoda(cilrs,
 #                         NegAffLADay ~ bilr1 + bilr2 + bilr3 + bilr4 +
 #                           wilr1 + wilr2 + wilr3 + wilr4 +
-#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + DayofWeek +
+#                           Age + Female + RACE3G + BMI + SES_1 + StudyID + WeekDay +
 #                           CurrentWork + CurrentSchool + SmokingStatus + AUDITCat + 
 #                           (1 + wilr1 + wilr2 + wilr3 + wilr4 | UID), 
 #                         cores = 4,

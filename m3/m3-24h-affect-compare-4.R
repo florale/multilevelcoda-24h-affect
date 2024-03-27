@@ -5,6 +5,7 @@ library(multilevelcoda)
 library(brms)
 library(cmdstanr)
 library(insight)
+library(bayestestR)
 
 library(doFuture)
 library(foreach)
@@ -36,9 +37,16 @@ m0_lana <- readRDS("m0_lana.RDS")
 
 # BF -------
 comparison_hapa <- bayesfactor_models(m_hapa$Model, mb_hapa$Model, mw_hapa$Model, denominator = m0_hapa$Model)
+saveRDS(comparison_hapa, paste0("comparison_hapa", ".RDS"))
+
 comparison_lapa <- bayesfactor_models(m_lapa$Model, mb_lapa$Model, mw_lapa$Model, denominator = m0_lapa$Model)
+saveRDS(comparison_lapa, paste0("comparison_lapa", ".RDS"))
+
 comparison_hana <- bayesfactor_models(m_hana$Model, mb_hana$Model, mw_hana$Model, denominator = m0_hana$Model)
+saveRDS(comparison_hana, paste0("comparison_hana", ".RDS"))
+
 comparison_lana <- bayesfactor_models(m_lana$Model, mb_lana$Model, mw_lana$Model, denominator = m0_lana$Model)
+saveRDS(comparison_lana, paste0("comparison_lana", ".RDS"))
 
 comparison_hapa
 comparison_lapa

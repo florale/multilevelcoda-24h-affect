@@ -38,3 +38,11 @@ vignettes/*.pdf
 *.Rproj
 
 .obsidian/
+
+.DS_Store
+
+.RDataTmp
+
+.RDataTmp1
+
+*.md

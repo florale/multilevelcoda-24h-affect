@@ -231,8 +231,12 @@ d[which(SBg == 0), "ID"]
 
 ## only three so just remove that participant, instead of imputation
 d <- d[ WAKEg > 0]
- 
-# ----------------------------------------
+
+cilrw <- compilr(d,
+                 sbp = sbp,
+                 parts = part_ww,
+                 idvar = "UID",
+                 total = 1440)
 # recheck
 zPatterns(d[Survey == "Wake", part_ww, with = FALSE], label = NA)
 zPatterns(d[, part_ww, with = FALSE], label = 0)
@@ -241,98 +245,124 @@ zPatterns(d[, part_ww, with = FALSE], label = 0)
 part_ss <- c("SleepgDayLag", "WAKEgDayLag", "MVPAg", "LPAg", "SBg")
 ds <- d[complete.cases(d[, .(SleepgDayLag, WAKEgDayLag, MVPAg, LPAg, SBg)])]
 
-# check
-# zPatterns(ds[, part_ss, with = FALSE], label = NA)
-# zPatterns(ds[, part_ss, with = FALSE], label = 0)
-ds <- ds[ WAKEgDayLag > 0]
+## Descriptive stats ---------------------------
 
-# impute 0
-# composition_ss_imp <- lrEM(ds[, part_ss, with = FALSE], label = 0,dl = rep(1,5))
-# ds <- cbind(ds[, -part_ss, with = FALSE], composition_ss_imp)
-
-cilrs <- compilr(ds,
-                 sbp = sbp,
-                 parts = part_ss,
-                 idvar = "UID",
-                 total = 1440)
-
-cilre <- compilr(ds[Survey == "Evening"],
-                 sbp = sbp,
-                 parts = part_ss,
-                 idvar = "UID",
-                 total = 1440)
-
-# wake-wake next day composition
-parts_ww_next <- c("SleepgNextDay", "WAKEgNextDay", "MVPAgNextDay", "LPAgNextDay", "SBgNextDay")
-# zPatterns(d[, parts_ww_next, with = FALSE], label = 0)
-# zPatterns(d[, parts_ww_next, with = FALSE], label = NA)
-
-dnext_lag <- cbind(cilrw$TotalILR, cilrw$BetweenILR, cilrw$WithinILR, cilrw$data)
-setnames(dnext_lag, "ilr1", "ilr1_lag")
-setnames(dnext_lag, "ilr2", "ilr2_lag")
-setnames(dnext_lag, "ilr3", "ilr3_lag")
-setnames(dnext_lag, "ilr4", "ilr4_lag")
-setnames(dnext_lag, "bilr1", "bilr1_lag")
-setnames(dnext_lag, "bilr2", "bilr2_lag")
-setnames(dnext_lag, "bilr3", "bilr3_lag")
-setnames(dnext_lag, "bilr4", "bilr4_lag")
-setnames(dnext_lag, "wilr1", "wilr1_lag")
-setnames(dnext_lag, "wilr2", "wilr2_lag")
-setnames(dnext_lag, "wilr3", "wilr3_lag")
-setnames(dnext_lag, "wilr4", "wilr4_lag")
-
-dnext <- d[complete.cases(d[, .(SleepgNextDay, WAKEgNextDay, MVPAgNextDay, LPAgNextDay, SBgNextDay)])]
-dnext <- merge(dnext, 
-               dnext_lag[, .(UID, Survey, SurveyDay, ilr1_lag, ilr2_lag, ilr3_lag, ilr4_lag,
-                             bilr1_lag, bilr2_lag, bilr3_lag, bilr4_lag,
-                             wilr1_lag, wilr2_lag, wilr3_lag, wilr4_lag
-               )], 
-               by = c("UID", "Survey", "SurveyDay"), all.x = TRUE)
-
-dnext <- dnext[WAKEgNextDay > 0]
-
-cilrw_next <- compilr(dnext,
-                      sbp = sbp,
-                      parts = parts_ww_next,
-                      idvar = "UID",
-                      total = 1440)
-
-# sleep-sleep next day composition
-parts_ss_next <- c("Sleepg", "WAKEg", "MVPAgNextDay", "LPAgNextDay", "SBgNextDay")
-
-dsnext_lag <- cbind(cilrs$TotalILR, cilrs$BetweenILR, cilrs$WithinILR, cilrs$data)
-setnames(dsnext_lag, "ilr1", "ilr1_lag")
-setnames(dsnext_lag, "ilr2", "ilr2_lag")
-setnames(dsnext_lag, "ilr3", "ilr3_lag")
-setnames(dsnext_lag, "ilr4", "ilr4_lag")
-setnames(dsnext_lag, "bilr1", "bilr1_lag")
-setnames(dsnext_lag, "bilr2", "bilr2_lag")
-setnames(dsnext_lag, "bilr3", "bilr3_lag")
-setnames(dsnext_lag, "bilr4", "bilr4_lag")
-setnames(dsnext_lag, "wilr1", "wilr1_lag")
-setnames(dsnext_lag, "wilr2", "wilr2_lag")
-setnames(dsnext_lag, "wilr3", "wilr3_lag")
-setnames(dsnext_lag, "wilr4", "wilr4_lag")
-
-dsnext <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAgDayLead, LPAgDayLead, SBgDayLead)])]
-dsnext <- merge(dsnext, 
-                dsnext_lag[, .(UID, Survey, SurveyDay, 
-                               ilr1_lag, ilr2_lag, ilr3_lag, ilr4_lag,
-                               bilr1_lag, bilr2_lag, bilr3_lag, bilr4_lag,
-                               wilr1_lag, wilr2_lag, wilr3_lag, wilr4_lag
-                )], 
-                by = c("UID", "Survey", "SurveyDay"), all.x = TRUE)
-
-cilrs_next <- compilr(dsnext,
-                      sbp = sbp,
-                      parts = parts_ss_next,
-                      idvar = "UID",
-                      total = 1440)
-
-# descriptives
 egltable(c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
-           # "PosAffHADayLead","PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead",
+           "PosAffHADayLead","PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead",
            
            "Age", "BMI", "SES_1", "Female", 
            "CurrentWork","CurrentSchool","DEDUUniPlus", "SmokingStatus",
            "RACE3G", "AUDITCat", "rMEQ"), strict = FALSE, g = "StudyID" ,  data = d[!duplicated(UID)])
+
+# descriptive stats
+fvars <- c("Female", "SmokingStatus", "CurrentWork", "AUDITCat", "DEDUUniPlus", "CurrentSchool")
+egltable(c(
+  # "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
+  # "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
+  # "SleepLight", "SleepDeep", "SleepREM", "WAKE", "TIBz",
+  # "WeekDay", 
+  "SmokingStatus", "CurrentWork", "AUDITCat", "DEDUUniPlus", "CurrentSchool",
+  "Age", "Female", "RACE3G", "BMI", "SES_1" ),
+  idvar = "UID", g = "StudyID",
+  data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars][!duplicated(UID)]
+)
+egltable(c(
+  "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
+  "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
+  # "SleepLight", "SleepDeep", "SleepREM", "WAKE", "TIBz",
+  "WeekDay"
+),
+idvar = "UID", g = "StudyID",
+data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars]
+)
+egltable(c(
+  # "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
+  # "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
+  # "SleepLight", "SleepDeep", "SleepREM", "WAKE", "TIBz",
+  # "WeekDay", 
+  "SmokingStatus", "CurrentWork", "AUDITCat", "DEDUUniPlus", "CurrentSchool",
+  "Age", "Female", "RACE3G", "BMI", "SES_1" ),
+  idvar = "UID", 
+  data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars][!duplicated(UID)]
+)
+egltable(c(
+  "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
+  "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
+  # "SleepLight", "SleepDeep", "SleepREM", "WAKE", "TIBz",
+  "WeekDay"
+),
+idvar = "UID", 
+data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars]
+)
+
+summary(cilrw)
+
+# ICC
+multilevelTools::iccMixed(c("PosAffHADayLead"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("PosAffLADayLead"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("NegAffHADayLead"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("NegAffLADayLead"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("STRESSDayLead"), id = "UID", data = d[Survey == "Evening"])
+
+multilevelTools::iccMixed(c("Sleepg"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("WAKEg"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("MVPAg"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("LPAg"), id = "UID", data = d[Survey == "Evening"])
+multilevelTools::iccMixed(c("SBg"), id = "UID", data = d[Survey == "Evening"])
+
+# nobs
+nrow(d[Survey == "Evening"][complete.cases(PosAffHADayLead)])
+nrow(d[Survey == "Evening"][complete.cases(PosAffLADayLead)])
+nrow(d[Survey == "Evening"][complete.cases(NegAffHADayLead)])
+nrow(d[Survey == "Evening"][complete.cases(NegAffLADayLead)])
+nrow(d[Survey == "Evening"][complete.cases(STRESSDayLead)])
+
+nrow(d[Survey == "Evening"][complete.cases(Sleepg)])
+nrow(d[Survey == "Evening"][complete.cases(WAKEg)])
+nrow(d[Survey == "Evening"][complete.cases(MVPAg)])
+nrow(d[Survey == "Evening"][complete.cases(LPAg)])
+nrow(d[Survey == "Evening"][complete.cases(SBg)])
+
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffHADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffLADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffHADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffLADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(STRESSDayLead)])
+
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(Sleepg)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(WAKEg)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(MVPAg)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(LPAg)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(SBg)])
+
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffHADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffLADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffHADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffLADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(STRESSDayLead)])
+
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(Sleepg)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(WAKEg)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(MVPAg)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(LPAg)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(SBg)])
+
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffHADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffLADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffHADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffLADayLead)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(STRESSDayLead)])
+
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(Sleepg)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(WAKEg)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(MVPAg)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(LPAg)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(SBg)])
+
+nrow(d[Survey == "Evening"][complete.cases(Age)][!duplicated(UID)])
+nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(Age)][!duplicated(UID)])
+nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(Age)][!duplicated(UID)])
+nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UID)])
+
+
+

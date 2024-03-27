@@ -46,3 +46,5 @@ vignettes/*.pdf
 .RDataTmp1
 
 *.md
+
+*.out

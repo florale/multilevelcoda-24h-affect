@@ -1,22 +1,4 @@
-library(data.table)
-library(extraoperators)
-library(compositions)
-library(zCompositions)
-library(multilevelcoda)
-library(brms)
-library(cmdstanr)
-library(insight)
-library(MASS)
-library(bayestestR)
-
-library(doFuture)
-library(foreach)
-library(parallel)
-library(doRNG)
-library(future)
-library(multilevelTools)
-library(JWileymisc)
-library(bayesplot)
+source("utils.R")
 
 shs <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/StressHealthStudy/SHS Research Interns/Data/shs_all_ggir.RDS"))
 destress <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/DESTRESSStudy/Data/destress_all_ggir.RDS"))
@@ -53,7 +35,7 @@ d <- rbind(shs[, .(
   BSTRESS, WSTRESS, WSTRESSDay, WSTRESSNextDay, WSTRESSLag1,
   
   # Behaviours
-  Sleepg, WAKEg, MVPAg, LPAg, SBg
+  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg
 )],
 destress[, .(
   ID, UID = paste0("D", ID), StudyID = "D",
@@ -81,7 +63,7 @@ destress[, .(
   BSTRESS, WSTRESS, WSTRESSDay, WSTRESSNextDay, WSTRESSLag1,
   
   # Behaviours
-  Sleepg, WAKEg, MVPAg, LPAg, SBg
+  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg
 )],
 aces[, .(
   ID, UID = paste0("A", ID), StudyID = "A",
@@ -109,7 +91,7 @@ aces[, .(
   BSTRESS, WSTRESS, WSTRESSDay, WSTRESSNextDay, WSTRESSLag1,
   
   # Behaviours
-  Sleepg, WAKEg, MVPAg, LPAg, SBg
+  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg
 )]
 )
 d[, USURVEYUID := 1:.N, by = .(UID)]
@@ -151,6 +133,11 @@ d[, c("PosAffHADayLag", "PosAffLADayLag", "NegAffHADayLag", "NegAffLADayLag", "S
 d[, c("WPosAffHADayLag", "WPosAffLADayLag", "WNegAffHADayLag", "WNegAffLADayLag", "WSTRESSDayLag") :=
     .SD[.(UID = UID, Survey = Survey, SurveyDay = SurveyDay - 1),
         .(WPosAffHADay, WPosAffLADay, WNegAffHADay, WNegAffLADay, WSTRESSDay),
+        on = c("UID", "SurveyDay", "Survey")]]
+
+d[, c("BPosAffHADayLag", "BPosAffLADayLag", "BNegAffHADayLag", "BNegAffLADayLag", "BSTRESSDayLag") :=
+    .SD[.(UID = UID, Survey = Survey, SurveyDay = SurveyDay - 1),
+        .(BPosAffHADay, BPosAffLADay, BNegAffHADay, BNegAffLADay, BSTRESSDay),
         on = c("UID", "SurveyDay", "Survey")]]
 
 # lead day
@@ -195,7 +182,12 @@ d[, c("WPosAffHALeadLag1", "WPosAffLALeadLag1", "WNegAffHALeadLag1", "WNegAffLAL
         ),
         on = c("UID", "USURVEYUID")]]
 
-View(d[, .(ID, UID, USURVEYUID, SurveyDay, Survey, PosAffHADay, PosAffHADayLag, PosAffHALead, WPosAffHADay, WPosAffHADayLag, PosAffHADayLead, Sleepg)])
+View(d[, .(ID, UID, USURVEYUID, SurveyDay, Survey, PosAffHADay, PosAffHADayLag, 
+           STRESS, WSTRESSDayLag,
+           PosAffHALead, WPosAffHADay, WPosAffHADayLag, PosAffHADayLead, Sleepg,
+           Age, Female,  RACE3G, BMI, SES_1, StudyID, WeekDay, CurrentWork,
+           CurrentSchool, SmokingStatus, AUDITCat
+           )])
 
 # recode covariates
 d[, RACE3G := NA]
@@ -221,32 +213,29 @@ sbp <- matrix(c(
   0, 0, 1, -1, -1,
   0, 0, 0, 1, -1), ncol = 5, byrow = TRUE)
 
-# use complete data and non-zeros
-d <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAg, LPAg, SBg)])]
-d <- d[ WAKEg > 0]
-
-# d <- d[0 %nin% c(Sleepg, WAKEg, MVPAg, LPAg, SBg,
-#                  SleepgDayLag, WAKEgDayLag,
-#                  SleepgNextDay, WAKEgNextDay, MVPAgNextDay, LPAgNextDay, SBgNextDay)]
-
 part_ww <- c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg")
 
-# check
-zPatterns(d[Survey == "Wake", part_ww, with = FALSE], label = NA)
-zPatterns(d[, part_ww, with = FALSE], label = 0)
+# use complete cases
+d <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAg, LPAg, SBg)])]
 
+# check 0s
+any(apply(d[, part_ww, with = FALSE], 2, function(x) x == 0))
+d[which(Sleepg == 0), "ID"]
+d[which(WAKEg == 0), "ID"]
+d[which(MVPAg == 0), "ID"]
+d[which(LPAg == 0), "ID"]
+d[which(SBg == 0), "ID"]
 
-# impute 0
-# composition_imp <- lrEM(d[, parts, with = FALSE], label = 0,dl = rep(1,5))
+# composition_imp <- lrEM(d[, parts, with = FALSE], label = 0,dl = rep(1, 4), ini.cov = "multRepl")
 # d <- cbind(d[, -parts, with = FALSE], composition_imp)
 
-# wake-wake composition
-
-cilrm <- compilr(d[Survey == "Morning"],
-                 sbp = sbp,
-                 parts = part_ww,
-                 idvar = "UID",
-                 total = 1440)
+## only three so just remove that participant, instead of imputation
+d <- d[ WAKEg > 0]
+ 
+# ----------------------------------------
+# recheck
+zPatterns(d[Survey == "Wake", part_ww, with = FALSE], label = NA)
+zPatterns(d[, part_ww, with = FALSE], label = 0)
 
 # sleep-sleep composition
 part_ss <- c("SleepgDayLag", "WAKEgDayLag", "MVPAg", "LPAg", "SBg")
@@ -325,7 +314,7 @@ setnames(dsnext_lag, "wilr2", "wilr2_lag")
 setnames(dsnext_lag, "wilr3", "wilr3_lag")
 setnames(dsnext_lag, "wilr4", "wilr4_lag")
 
-dsnext <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAgNextDay, LPAgNextDay, SBgNextDay)])]
+dsnext <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAgDayLead, LPAgDayLead, SBgDayLead)])]
 dsnext <- merge(dsnext, 
                 dsnext_lag[, .(UID, Survey, SurveyDay, 
                                ilr1_lag, ilr2_lag, ilr3_lag, ilr4_lag,
@@ -339,3 +328,11 @@ cilrs_next <- compilr(dsnext,
                       parts = parts_ss_next,
                       idvar = "UID",
                       total = 1440)
+
+# descriptives
+egltable(c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
+           # "PosAffHADayLead","PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead",
+           
+           "Age", "BMI", "SES_1", "Female", 
+           "CurrentWork","CurrentSchool","DEDUUniPlus", "SmokingStatus",
+           "RACE3G", "AUDITCat", "rMEQ"), strict = FALSE, g = "StudyID" ,  data = d[!duplicated(UID)])

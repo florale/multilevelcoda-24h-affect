@@ -1356,3 +1356,14 @@ summary(mhana_ww_lag1_sub_adj)
 summary(mlana_ww_lag1_sub_adj)
 
 
+# # projection
+# 
+# cv_varsel(
+#   m_hapa$Model,
+#   # formula = formula(m_hapa$Model),
+#   formula = PosAffHADayLead ~ bilr1 + bilr2 + bilr3 + bilr4 + wilr1 + wilr2 + wilr3 + wilr4,
+#   data = m_hapa$Model$data,
+#   latent = TRUE,
+#   dis = as.matrix(m_hapa$Model)[, "sigma"]
+# )
+

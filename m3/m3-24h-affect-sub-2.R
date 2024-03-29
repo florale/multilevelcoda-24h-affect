@@ -21,21 +21,21 @@ m_lana <- readRDS("m_lana.RDS")
 
 ## substitution
 plan(multisession, workers = 5)
-# mhana_ww_lag_sub_adj <- substitution(
-#   m_hana,
-#   delta = c(1:60),
-#   # delta = c(60),
-#   level = c("between", "within"),
-#   ref = "grandmean")
-# saveRDS(mhana_ww_lag_sub_adj, "mhana_ww_lag_sub_adj.RDS")
+mhana_ww_sub <- substitution(
+  m_hana,
+  delta = c(1:60),
+  # delta = c(60),
+  level = c("between", "within"),
+  ref = "grandmean")
+saveRDS(mhana_ww_sub, "mhana_ww_sub.RDS")
 
-mlana_ww_lag_sub_adj <- substitution(
+mlana_ww_sub <- substitution(
   m_lana,
   delta = c(1:60),
   # delta = c(60),
   level = c("between", "within"),
   ref = "grandmean")
-saveRDS(mlana_ww_lag_sub_adj, "mlana_ww_lag_sub_adj.RDS")
+saveRDS(mlana_ww_sub, "mlana_ww_sub.RDS")
 plan(sequential)
 
 

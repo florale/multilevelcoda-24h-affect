@@ -1,4 +1,4 @@
-source("utils.R")
+source("24h-affect-utils.R")
 
 shs <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/StressHealthStudy/SHS Research Interns/Data/shs_all_ggir.RDS"))
 destress <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/DESTRESSStudy/Data/destress_all_ggir.RDS"))
@@ -140,12 +140,13 @@ d[, c("BPosAffHADayLag", "BPosAffLADayLag", "BNegAffHADayLag", "BNegAffLADayLag"
         .(BPosAffHADay, BPosAffLADay, BNegAffHADay, BNegAffLADay, BSTRESSDay),
         on = c("UID", "SurveyDay", "Survey")]]
 
-# lead day
+### lead day - used variables
 d[, c("PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead") :=
     .SD[.(UID = UID, Survey = Survey, SurveyDay = SurveyDay + 1),
         .(PosAffHADay, PosAffLADay, NegAffHADay, NegAffLADay, STRESSDay),
         on = c("UID", "SurveyDay", "Survey")]]
 
+### others
 d[, c("SleepgDayLead", "WAKEgDayLead", "MVPAgDayLead", "LPAgDayLead", "SBgDayLead") :=
     .SD[.(UID = UID, Survey = Survey, SurveyDay = SurveyDay + 1),
         .(Sleepg, WAKEg, MVPAg, LPAg, SBg),
@@ -364,5 +365,6 @@ nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(Age)][!duplicated(UI
 nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(Age)][!duplicated(UID)])
 nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UID)])
 
-
+# saveRDS(d, paste0(outputdir, "d", ".RDS"))
+# saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))
 

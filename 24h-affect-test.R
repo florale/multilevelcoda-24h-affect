@@ -1,4 +1,4 @@
-source("data.R")
+source("24h-affect-data.R")
 
 # Sleep-Sleep - Same day outcome adj for prev day -------------------------
 mhapa_ss_lag_adj <- brmcoda(cilrs,

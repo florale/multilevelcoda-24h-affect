@@ -1,4 +1,4 @@
-source("data.R")
+source("24h-affect-data.R")
 
 cilrw <- compilr(d,
                  sbp = sbp,

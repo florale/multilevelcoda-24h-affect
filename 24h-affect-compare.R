@@ -1,4 +1,4 @@
-source("utils.R")
+source("24h-affect-utils.R")
 # MODELS --------------------
 m_hapa <- readRDS(paste0(outputdir, "m_hapa", ".RDS"))
 m_lapa <- readRDS(paste0(outputdir, "m_lapa", ".RDS"))
@@ -167,3 +167,14 @@ comparison_hapa
 comparison_lapa
 comparison_hana
 comparison_lana
+
+# out <- multilevelTools::ranefdata(
+#   m_hapa$Model,
+#   newdata = data.table(UID = model.frame(m_hapa)$UID[1], wilr1 = 0, wilr2 = 0, wilr3 = 0, wilr4 = 0),
+#   usevars = c("Intercept", "wilr1", "wilr2", "wilr3", "wilr4",
+#               "sigma"
+#               ),
+#   idvar = "UID")
+# 
+# do.call(ggarrange, c(out$replots, ncol=2,nrow=2))
+# do.call(ggarrange, c(out$scatterplots, ncol=2,nrow=3))

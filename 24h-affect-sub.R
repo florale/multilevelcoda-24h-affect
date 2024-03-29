@@ -1,4 +1,4 @@
-source("data.R")
+source("24h-affect-utils.R")
 
 # Wake-Wake - Next day average outcome (prospective) -------------------------
 m_hapa <- readRDS(paste0(outputdir, "m_hapa", ".RDS"))
@@ -36,18 +36,23 @@ m_lana <- readRDS(paste0(outputdir, "m_lana", ".RDS"))
 #   ref = "grandmean")
 # plan(sequential)
 
-mhapa_ww_lag_sub_adj <- readRDS(paste0(outputdir, "mhapa_ww_lag_sub_adj", ".RDS"))
-mlapa_ww_lag_sub_adj <- readRDS(paste0(outputdir, "mlapa_ww_lag_sub_adj", ".RDS"))
-mhana_ww_lag_sub_adj <- readRDS(paste0(outputdir, "mhana_ww_lag_sub_adj", ".RDS"))
-mlana_ww_lag_sub_adj <- readRDS(paste0(outputdir, "mlana_ww_lag_sub_adj", ".RDS"))
+mhapa_ww_sub <- readRDS(paste0(outputdir, "mhapa_ww_sub", ".RDS"))
+mlapa_ww_sub <- readRDS(paste0(outputdir, "mlapa_ww_sub", ".RDS"))
+mhana_ww_sub <- readRDS(paste0(outputdir, "mhana_ww_sub", ".RDS"))
+mlana_ww_sub <- readRDS(paste0(outputdir, "mlana_ww_sub", ".RDS"))
 
 ## substitution summary 
-summary(mhapa_ww_lag_sub_adj, delta = 30)
-summary(mlapa_ww_lag_sub_adj, delta = 30)
-summary(mhana_ww_lag_sub_adj, delta = 30)
-summary(mlana_ww_lag_sub_adj, delta = 30)
+summary(mhapa_ww_sub, delta = 30)
+summary(mlapa_ww_sub, delta = 30)
+summary(mhana_ww_sub, delta = 30)
+summary(mlana_ww_sub, delta = 30)
 
-summary(mhapa_ww_lag_sub_adj, delta = 30, digits = 3)
-summary(mlapa_ww_lag_sub_adj, delta = 30, digits = 3)
-summary(mhana_ww_lag_sub_adj, delta = 30, digits = 3)
-summary(mlana_ww_lag_sub_adj, delta = 30, digits = 3)
+summary(mhapa_ww_sub, delta = 60, digits = 3)
+summary(mlapa_ww_sub, delta = 60, digits = 3)
+summary(mhana_ww_sub, delta = 60, digits = 3)
+summary(mlana_ww_sub, delta = 60, digits = 3)
+
+summary(mhapa_ww_lag_sub_adj, delta = 1, digits = 5)
+summary(mlapa_ww_lag_sub_adj, delta = 1, digits = 5)
+summary(mhana_ww_lag_sub_adj, delta = 1, digits = 5)
+summary(mlana_ww_lag_sub_adj, delta = 1, digits = 5)

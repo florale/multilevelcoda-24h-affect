@@ -1,11 +1,4 @@
-library(hrbrthemes)
-library(wesanderson)
-library(ggplot2)
-library(ggsci)
-library(ggpubr)
-library(patchwork)
-library(latex2exp)
-source("utils.R")
+source("24h-affect-utils.R")
 
 # read models ----------------
 # m_hapa <- readRDS(paste0(outputdir, "m_hapa", ".RDS"))
@@ -1058,7 +1051,7 @@ extrafont::loadfonts()
 grDevices::cairo_pdf(
   file = paste0(outputdir, "plotw_hapa_lpa", ".pdf"),
   width = 8,
-  height = 5,
+  height = 4,
 )
 plotw_hapa_lpa
 dev.off()
@@ -1066,7 +1059,7 @@ dev.off()
 grDevices::cairo_pdf(
   file = paste0(outputdir, "plotw_lana_mvpa", ".pdf"),
   width = 8,
-  height = 5,
+  height = 4,
 )
 plotw_lana_mvpa
 dev.off()

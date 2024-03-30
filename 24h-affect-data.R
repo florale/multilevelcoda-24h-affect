@@ -217,34 +217,50 @@ sbp <- matrix(c(
 part_ww <- c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg")
 
 # use complete cases
-d <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAg, LPAg, SBg)])]
+dw <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAg, LPAg, SBg)])]
 
 # check 0s
-any(apply(d[, part_ww, with = FALSE], 2, function(x) x == 0))
-d[which(Sleepg == 0), "ID"]
-d[which(WAKEg == 0), "ID"]
-d[which(MVPAg == 0), "ID"]
-d[which(LPAg == 0), "ID"]
-d[which(SBg == 0), "ID"]
+any(apply(dw[, part_ww, with = FALSE], 2, function(x) x == 0))
+dw[which(Sleepg == 0), "ID"]
+dw[which(WAKEg == 0), "ID"]
+dw[which(MVPAg == 0), "ID"]
+dw[which(LPAg == 0), "ID"]
+dw[which(SBg == 0), "ID"]
 
 # composition_imp <- lrEM(d[, parts, with = FALSE], label = 0,dl = rep(1, 4), ini.cov = "multRepl")
 # d <- cbind(d[, -parts, with = FALSE], composition_imp)
 
 ## only three so just remove that participant, instead of imputation
-d <- d[ WAKEg > 0]
+dw <- dw[ WAKEg > 0]
 
-cilrw <- compilr(d,
+cilrw <- compilr(dw,
                  sbp = sbp,
                  parts = part_ww,
                  idvar = "UID",
                  total = 1440)
 # recheck
-zPatterns(d[Survey == "Wake", part_ww, with = FALSE], label = NA)
-zPatterns(d[, part_ww, with = FALSE], label = 0)
+zPatterns(dw[Survey == "Wake", part_ww, with = FALSE], label = NA)
+zPatterns(dw[, part_ww, with = FALSE], label = 0)
 
-# sleep-sleep composition
-part_ss <- c("SleepgDayLag", "WAKEgDayLag", "MVPAg", "LPAg", "SBg")
-ds <- d[complete.cases(d[, .(SleepgDayLag, WAKEgDayLag, MVPAg, LPAg, SBg)])]
+## sleep-sleep composition
+part_ss <- c("Sleepg", "WAKEg", "MVPAgDayLead", "LPAgDayLead", "SBgDayLead")
+ds <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAgDayLead, LPAgDayLead, SBgDayLead)])]
+
+# check 0s
+any(apply(ds[, part_ss, with = FALSE], 2, function(x) x == 0))
+ds[which(Sleepg == 0), "ID"]
+ds[which(WAKEg == 0), "ID"]
+ds[which(MVPAg == 0), "ID"]
+ds[which(LPAg == 0), "ID"]
+ds[which(SBg == 0), "ID"]
+
+ds <- ds[ WAKEg > 0]
+
+cilrs <- compilr(ds,
+                 sbp = sbp,
+                 parts = part_ss,
+                 idvar = "UID",
+                 total = 1440)
 
 ## Descriptive stats ---------------------------
 
@@ -367,4 +383,5 @@ nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UI
 
 # saveRDS(d, paste0(outputdir, "d", ".RDS"))
 # saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))
+# saveRDS(cilrs, paste0(outputdir, "cilrs", ".RDS"))
 

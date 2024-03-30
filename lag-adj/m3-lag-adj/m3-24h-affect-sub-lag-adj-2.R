@@ -17,6 +17,7 @@ library(loo)
 m_hapa_lag_adj <- readRDS("m_hapa_lag_adj.RDS")
 m_hapa_lag_adj <- readRDS("m_lapa_lag_adj.RDS")
 m_hana_lag_adj <- readRDS("m_hana_lag_adj.RDS")
+m_lana_lag_adj <- readRDS("m_lana_lag_adj.RDS")
 
 ## substitution
 plan(multisession, workers = 5)
@@ -26,7 +27,6 @@ m_hapa_lag_adj_sub <- substitution(
   # delta = c(60),
   level = c("between", "within"),
   ref = "grandmean")
-saveRDS(m_hana_lag_adj_sub, "m_hana_lag_adj_sub.RDS")
 
 m_lana_lag_adj <- readRDS("m_lana_lag_adj.RDS")
 m_lana_lag_adj_sub <- substitution(
@@ -35,8 +35,10 @@ m_lana_lag_adj_sub <- substitution(
   # delta = c(60),
   level = c("between", "within"),
   ref = "grandmean")
-saveRDS(m_lana_lag_adj_sub, "m_lana_lag_adj_sub.RDS")
 plan(sequential)
+
+saveRDS(m_hana_lag_adj_sub, "m_hana_lag_adj_sub.RDS")
+saveRDS(m_lana_lag_adj_sub, "m_lana_lag_adj_sub.RDS")
 
 
 

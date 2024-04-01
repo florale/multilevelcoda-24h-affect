@@ -15,7 +15,7 @@ library(loo)
 
 # MODELS --------------------
 m_hapa_lag_adj <- readRDS("m_hapa_lag_adj.RDS")
-m_hapa_lag_adj <- readRDS("m_lapa_lag_adj.RDS")
+m_lapa_lag_adj <- readRDS("m_lapa_lag_adj.RDS")
 m_hana_lag_adj <- readRDS("m_hana_lag_adj.RDS")
 m_lana_lag_adj <- readRDS("m_lana_lag_adj.RDS")
 

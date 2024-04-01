@@ -28,7 +28,6 @@ m_hapa_lag_adj_sub <- substitution(
   level = c("between", "within"),
   ref = "grandmean")
 
-m_lana_lag_adj <- readRDS("m_lana_lag_adj.RDS")
 m_lana_lag_adj_sub <- substitution(
   m_lana_lag_adj,
   delta = c(1:60),

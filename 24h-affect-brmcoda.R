@@ -1,11 +1,5 @@
 source("24h-affect-data.R")
 
-cilrw <- compilr(d,
-                 sbp = sbp,
-                 parts = part_ww,
-                 idvar = "UID",
-                 total = 1440)
-
 # full ---------------------
 m_hapa <- brmcoda(cilrw,
                   PosAffHADayLead ~ 

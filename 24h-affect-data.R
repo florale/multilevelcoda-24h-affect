@@ -233,7 +233,7 @@ dw[which(SBg == 0), "ID"]
 ## only three so just remove that participant, instead of imputation
 dw <- dw[ WAKEg > 0]
 
-cilrw <- compilr(dw,
+cilrw <- complr(dw,
                  sbp = sbp,
                  parts = part_ww,
                  idvar = "UID",
@@ -256,7 +256,7 @@ ds[which(SBg == 0), "ID"]
 
 ds <- ds[ WAKEg > 0]
 
-cilrs <- compilr(ds,
+cilrs <- complr(ds,
                  sbp = sbp,
                  parts = part_ss,
                  idvar = "UID",

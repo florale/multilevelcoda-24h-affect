@@ -14,29 +14,63 @@ library(future)
 library(loo)
 
 # MODELS --------------------
-m_hapa <- readRDS("m_hapa.RDS")
-m_lapa <- readRDS("m_lapa.RDS")
-m_hana <- readRDS("m_hana.RDS")
-m_lana <- readRDS("m_lana.RDS")
-
-## substitution
-plan(multisession, workers = 5)
-mhapa_ww_sub <- substitution(
-  m_hapa,
-  delta = c(1:60),
-  # delta = c(60),
-  level = c("between", "within"),
-  ref = "grandmean")
-saveRDS(mhapa_ww_sub, "mhapa_ww_sub.RDS")
-
-mlapa_ww_sub <- substitution(
-  m_lapa,
-  delta = c(1:60),
-  # delta = c(60),
-  level = c("between", "within"),
-  ref = "grandmean")
-saveRDS(mlapa_ww_sub, "mlapa_ww_sub.RDS")
-plan(sequential)
-
-
-
+local <- FALSE
+if (local) {
+  
+  source("24h-affect-utils.R")
+  m_hapa <- readRDS(paste0(outputdir, "m_hapa", ".RDS"))
+  m_lapa <- readRDS(paste0(outputdir, "m_lapa", ".RDS"))
+  # m_hana <- readRDS(paste0(outputdir, "m_hana", ".RDS"))
+  # m_lana <- readRDS(paste0(outputdir, "m_lana", ".RDS"))
+  
+  m_hapa_sub <- substitution(
+    m_hapa,
+    delta = c(1:60),
+    # delta = c(60),
+    level = c("between", "within"),
+    ref = "grandmean",
+    cores = 1
+  )
+  saveRDS(m_hapa_sub, paste0(outputdir, "m_hapa_sub", ".RDS"))
+  rm(m_hapa)
+  
+  m_lapa_sub <- substitution(
+    m_lapa,
+    delta = c(1:60),
+    # delta = c(60),
+    level = c("between", "within"),
+    ref = "grandmean",
+    cores = 2
+  )
+  saveRDS(m_lapa_sub, paste0(outputdir, "m_lapa_sub", ".RDS"))
+  rm(m_lapa)
+  
+} else {
+  m_hapa <- readRDS("m_hapa.RDS")
+  m_lapa <- readRDS("m_lapa.RDS")
+  # m_hana <- readRDS("m_hana.RDS")
+  # m_lana <- readRDS("m_lana.RDS")
+  
+  m_hapa_sub <- substitution(
+    m_hapa,
+    delta = c(1:60),
+    # delta = c(60),
+    level = c("between", "within"),
+    ref = "grandmean",
+    cores = 3
+  )
+  saveRDS(m_hapa_sub, "m_hapa_sub.RDS")
+  rm(m_hapa)
+  
+  m_lapa_sub <- substitution(
+    m_lapa,
+    delta = c(1:60),
+    # delta = c(60),
+    level = c("between", "within"),
+    ref = "grandmean",
+    cores = 3
+  )
+  saveRDS(m_lapa_sub, "m_lapa_sub.RDS")
+  rm(m_lapa)
+  
+}

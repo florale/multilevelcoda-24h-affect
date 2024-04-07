@@ -1,0 +1,74 @@
+---
+title: "Daily Reallocation of Movement Behaviours and Affect"
+author: "Flora Le (flora.le@monash.edu)"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: spacelab
+    highlight: zenburn
+    toc: no
+    toc_float: no
+    collapsed: no
+    smooth_scroll: no
+    toc_depth: 4
+    fig_width: 8
+    fig_height: 4
+    fig_caption: yes
+    number_sections: true
+---
+
+This file presents the full 
+daily reallocation of movement behaviours and affect
+results using the
+Bayesian compositional multilevel substitution analysis
+for the manuscript:
+**Daily Reallocation of Sleep, Physical Activity, and Sedentary Behaviour with Affect: A Bayesian Multilevel Compositional Data Analysis.**
+
+*Notes.* 
+
+* MVPA = Moderate-to-Vigorous Physical Activity
+* LPA = Light Physical Activity
+* SB = Sedentary Behaviour
+
+```{r, echo=FALSE, message=FALSE}
+source("24h-affect-results-setup.R")
+```
+
+# Statistics for 30-minute Reallocation
+
+ * Reallocation of 30 minutes between movement behaviours and *high arousal positive affect*
+ 
+```{r, warning=FALSE, echo=FALSE, fig.width=9}
+knitr::kable(h24_affect_sub_list[[1]])
+```
+
+ * Reallocation of 30 minutes between movement behaviours and *low arousal positive affect*
+ 
+```{r, warning=FALSE, echo=FALSE}
+knitr::kable(h24_affect_sub_list[[2]])
+```
+
+ * Reallocation of 30 minutes between movement behaviours and *high arousal negative affect*
+ 
+```{r, warning=FALSE, echo=FALSE}
+knitr::kable(h24_affect_sub_list[[3]])
+```
+
+ * Reallocation of 30 minutes between movement behaviours and *low arousal negative affect*
+ 
+```{r, warning=FALSE, echo=FALSE}
+knitr::kable(h24_affect_sub_list[[4]])
+```
+
+# Visualisation of Reallocation from 1 to 60 minutes of movement behaviours and affect
+## Between person level
+
+```{r, warning=FALSE, echo = FALSE, results='asis', fig.align='center'}
+walk(h24_affect_plot_b, print)
+```
+
+## Within person level
+
+```{r, warning=FALSE, echo = FALSE, results='asis', fig.align='center'}
+walk(h24_affect_plot_w, print)
+```

@@ -238,9 +238,11 @@ cilrw <- complr(dw,
                  parts = part_ww,
                  idvar = "UID",
                  total = 1440)
+saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))
+
 # recheck
-zPatterns(dw[Survey == "Wake", part_ww, with = FALSE], label = NA)
-zPatterns(dw[, part_ww, with = FALSE], label = 0)
+# zPatterns(dw[Survey == "Wake", part_ww, with = FALSE], label = NA)
+# zPatterns(dw[, part_ww, with = FALSE], label = 0)
 
 ## sleep-sleep composition
 part_ss <- c("Sleepg", "WAKEg", "MVPAgDayLead", "LPAgDayLead", "SBgDayLead")
@@ -261,6 +263,7 @@ cilrs <- complr(ds,
                  parts = part_ss,
                  idvar = "UID",
                  total = 1440)
+saveRDS(cilrs, paste0(outputdir, "cilrs", ".RDS"))
 
 ## Descriptive stats ---------------------------
 

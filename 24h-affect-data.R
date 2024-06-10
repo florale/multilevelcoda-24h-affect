@@ -168,6 +168,12 @@ d[, c("PosAffHALeadLag2", "PosAffLALeadLag2", "NegAffHALeadLag2", "NegAffLALeadL
         .(PosAffHALead, PosAffLALead, NegAffHALead, NegAffLALead, STRESSLead),
         on = c("UID", "USURVEYUID")]]
 
+d[, c("BPosAffHADayLead", "WPosAffHADayLeadAffHALead") := meanDeviations(PosAffHADayLead), by = UID]
+d[, c("BPosAffLADayLead", "WPosAffLADayLead") := meanDeviations(PosAffLADayLead), by = UID]
+d[, c("BNegAffHADayLead", "WNegAffHADayLead") := meanDeviations(NegAffHADayLead), by = UID]
+d[, c("BNegAffLADayLead", "WNegAffLADayLead") := meanDeviations(NegAffLADayLead), by = UID]
+d[, c("BSTRESSDayLead", "WSTRESSDayLead") := meanDeviations(STRESSDayLead), by = UID]
+
 d[, c("BPosAffHALead", "WPosAffHALead") := meanDeviations(PosAffHALead), by = UID]
 d[, c("BPosAffLALead", "WPosAffLALead") := meanDeviations(PosAffLALead), by = UID]
 d[, c("BNegAffHALead", "WNegAffHALead") := meanDeviations(NegAffHALead), by = UID]

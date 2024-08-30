@@ -21,7 +21,7 @@ m_lana_lag_adj <- readRDS("m_lana_lag_adj.RDS")
 
 ## substitution
 plan(multisession, workers = 5)
-m_hapa_lag_adj_sub <- substitution(
+m_hana_lag_adj_sub <- substitution(
   m_hana_lag_adj,
   delta = c(1:60),
   # delta = c(60),

@@ -1,0 +1,139 @@
+library(data.table)
+library(extraoperators)
+library(compositions)
+library(multilevelcoda)
+library(brms)
+library(cmdstanr)
+library(insight)
+
+library(doFuture)
+library(foreach)
+library(parallel)
+library(doRNG)
+library(future)
+library(loo)
+
+m_hapa_24h <- readRDS(paste0("m_hapa_24h", ".RDS"))
+m_lapa_24h <- readRDS(paste0("m_lapa_24h", ".RDS"))
+m_hana_24h <- readRDS(paste0("m_hana_24h", ".RDS"))
+m_lana_24h <- readRDS(paste0("m_lana_24h", ".RDS"))
+
+# posthoc hapa --------------------
+d0 <- model.frame(m_hapa_24h)
+y0 <- as.data.table(fitted(
+  m_hapa_24h,
+  newdata = d0,
+  re_formula = NULL,
+  summary = FALSE
+))
+y0 <- dcast(y0, V1 + V2 ~ V3, value.var = "value")
+
+# between hapa effect
+db <- as.data.table(d0)[, BPosAffHADay := BPosAffHADay + 1]
+yb <- as.data.table(fitted(
+  m_hapa_24h,
+  newdata = db,
+  re_formula = NULL,
+  summary = FALSE
+))
+yb <- dcast(yb, V1 + V2 ~ V3, value.var = "value")
+
+ilr0 <- y0[, colnames(m_hapa_24h$CompILR$TotalILR), with = FALSE]
+m_hapa_24h_0 <- ilrInv(ilr0, V = m_hapa_24h$CompILR$psi)
+m_hapa_24h_0 <- as.data.table(clo(m_hapa_24h_0, total = m_hapa_24h$CompILR$total))
+names(m_hapa_24h_0) <- part_ss
+
+ilrb <- yb[, colnames(m_hapa_24h$CompILR$TotalILR), with = FALSE]
+m_hapa_24h_b <- ilrInv(ilrb, V = m_hapa_24h$CompILR$psi)
+m_hapa_24h_b <- as.data.table(clo(m_hapa_24h_b, total = m_hapa_24h$CompILR$total))
+names(m_hapa_24h_b) <- part_ss
+
+m_hapa_24h_delta_b <- m_hapa_24h_b - m_hapa_24h_0
+(m_hapa_24h_delta_b <- describe_posterior(m_hapa_24h_delta_b, centrality = "mean"))
+
+saveRDS(m_hapa_24h_delta_b, paste0("m_hapa_24h_delta_b", ".RDS"))
+
+# within hapa effect
+dw <- as.data.table(d0)[, WPosAffHADay := WPosAffHADay + 1]
+yw <- as.data.table(fitted(
+  m_hapa_24h,
+  newdata = dw,
+  re_formula = NULL,
+  summary = FALSE
+))
+yw <- dcast(yw, V1 + V2 ~ V3, value.var = "value")
+
+ilr0 <- y0[, colnames(m_hapa_24h$CompILR$TotalILR), with = FALSE]
+m_hapa_24h_0 <- ilrInv(ilr0, V = m_hapa_24h$CompILR$psi)
+m_hapa_24h_0 <- as.data.table(clo(m_hapa_24h_0, total = m_hapa_24h$CompILR$total))
+names(m_hapa_24h_0) <- part_ss
+
+ilrw <- yw[, colnames(m_hapa_24h$CompILR$TotalILR), with = FALSE]
+m_hapa_24h_w <- ilrInv(ilrw, V = m_hapa_24h$CompILR$psi)
+m_hapa_24h_w <- as.data.table(clo(m_hapa_24h_w, total = m_hapa_24h$CompILR$total))
+names(m_hapa_24h_w) <- part_ss
+
+m_hapa_24h_delta_w <- m_hapa_24h_w - m_hapa_24h_0
+(m_hapa_24h_delta_w <- describe_posterior(m_hapa_24h_delta_w, centrality = "mean"))
+
+saveRDS(m_hapa_24h_delta_w, paste0("m_hapa_24h_delta_w", ".RDS"))
+
+# posthoc lapa --------------------
+d0 <- model.frame(m_lapa_24h)
+y0 <- as.data.table(fitted(
+  m_lapa_24h,
+  newdata = d0,
+  re_formula = NULL,
+  summary = FALSE
+))
+y0 <- dcast(y0, V1 + V2 ~ V3, value.var = "value")
+
+# between lapa effect
+db <- as.data.table(d0)[, BPosAffLADay := BPosAffLADay + 1]
+yb <- as.data.table(fitted(
+  m_lapa_24h,
+  newdata = db,
+  re_formula = NULL,
+  summary = FALSE
+))
+yb <- dcast(yb, V1 + V2 ~ V3, value.var = "value")
+
+ilr0 <- y0[, colnames(m_lapa_24h$CompILR$TotalILR), with = FALSE]
+m_lapa_24h_0 <- ilrInv(ilr0, V = m_lapa_24h$CompILR$psi)
+m_lapa_24h_0 <- as.data.table(clo(m_lapa_24h_0, total = m_lapa_24h$CompILR$total))
+names(m_lapa_24h_0) <- part_ss
+
+ilrb <- yb[, colnames(m_lapa_24h$CompILR$TotalILR), with = FALSE]
+m_lapa_24h_b <- ilrInv(ilrb, V = m_lapa_24h$CompILR$psi)
+m_lapa_24h_b <- as.data.table(clo(m_lapa_24h_b, total = m_lapa_24h$CompILR$total))
+names(m_lapa_24h_b) <- part_ss
+
+m_lapa_24h_delta_b <- m_lapa_24h_b - m_lapa_24h_0
+(m_lapa_24h_delta_b <- describe_posterior(m_lapa_24h_delta_b, centrality = "mean"))
+
+saveRDS(m_lapa_24h_delta_b, paste0("m_lapa_24h_delta_b", ".RDS"))
+
+# within lapa effect
+dw <- as.data.table(d0)[, WPosAffLADay := WPosAffLADay + 1]
+yw <- as.data.table(fitted(
+  m_lapa_24h,
+  newdata = dw,
+  re_formula = NULL,
+  summary = FALSE
+))
+yw <- dcast(yw, V1 + V2 ~ V3, value.var = "value")
+
+ilr0 <- y0[, colnames(m_lapa_24h$CompILR$TotalILR), with = FALSE]
+m_lapa_24h_0 <- ilrInv(ilr0, V = m_lapa_24h$CompILR$psi)
+m_lapa_24h_0 <- as.data.table(clo(m_lapa_24h_0, total = m_lapa_24h$CompILR$total))
+names(m_lapa_24h_0) <- part_ss
+
+ilrw <- yw[, colnames(m_lapa_24h$CompILR$TotalILR), with = FALSE]
+m_lapa_24h_w <- ilrInv(ilrw, V = m_lapa_24h$CompILR$psi)
+m_lapa_24h_w <- as.data.table(clo(m_lapa_24h_w, total = m_lapa_24h$CompILR$total))
+names(m_lapa_24h_w) <- part_ss
+
+m_lapa_24h_delta_w <- m_lapa_24h_w - m_lapa_24h_0
+(m_lapa_24h_delta_w <- describe_posterior(m_lapa_24h_delta_w, centrality = "mean"))
+
+saveRDS(m_lapa_24h_delta_w, paste0("m_lapa_24h_delta_w", ".RDS"))

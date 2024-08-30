@@ -22,7 +22,7 @@ daily reallocation of movement behaviours and affect
 results using the
 Bayesian compositional multilevel substitution analysis
 for the manuscript:
-**Daily Reallocation of Sleep, Physical Activity, and Sedentary Behaviour with Affect: A Bayesian Multilevel Compositional Data Analysis.**
+**Daily Reallocation of Sleep, Physical Activity, and Sedentary Behaviour with Affect: A Bayesian Multilevel Compositional Data Analysis**.
 
 *Notes.* 
 
@@ -38,7 +38,7 @@ source("24h-affect-results-setup.R")
 
  * Reallocation of 30 minutes between movement behaviours and *high arousal positive affect*
  
-```{r, warning=FALSE, echo=FALSE, fig.width=9}
+```{r, warning=FALSE, echo=FALSE}
 knitr::kable(h24_affect_sub_list[[1]])
 ```
 

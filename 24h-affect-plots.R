@@ -129,7 +129,9 @@ h24_affect_plot_b <- foreach(i = 1:20,
                                             labeller = label_bquote(cols = .(as.character(From)) %<-% minutes %->% .(as.character(To))),
                                             strip.position = "bottom", ncol = 4) +
                                  scale_x_continuous(limits = c(-60, 60),
-                                                    breaks = c(-60, 0, 60)) +
+                                                    breaks = c(-60, 0, 60),
+                                                    labels = c(60, 0, 60)
+                                 ) +
                                  scale_y_continuous(limits = c(-2.4, 2.4),
                                                     breaks = c(-2, -1, 0, 1, 2),
                                                     sec.axis = sec_axis(~ . / rg[i, "smean"], name = paste0("Standardised Estimated Difference"))
@@ -218,13 +220,15 @@ h24_affect_plot_w <- foreach(i = 21:40,
                                            show.legend = FALSE) +
                                  scale_colour_manual(values = col) +
                                  scale_fill_manual(values = colf) +
-                                 labs(x = paste0("Difference in ", rg[i, "parts"], " at Within-person Level"),
-                                      y = paste0("Estimated Difference")) +
+                                 labs(x = paste0("Changes in ", rg[i, "parts"], " at Within-person Level"),
+                                      y = paste0("Estimated Changes")) +
                                  facet_wrap(ggplot2::vars(From, To),
                                             labeller = label_bquote(cols = .(as.character(From)) %<-% minutes %->% .(as.character(To))),
                                             strip.position = "bottom", ncol = 4) +
                                  scale_x_continuous(limits = c(-60, 60),
-                                                    breaks = c(-60, 0, 60)) +
+                                                    breaks = c(-60, 0, 60),
+                                                    labels = c(60, 0, 60)
+                                                    ) +
                                  scale_y_continuous(limits = c(-0.35, 0.35),
                                                     breaks = c(-0.25, 0, 0.25),
                                                     sec.axis = sec_axis(~ . / rg[i, "smean"], name = paste0("Standardised Estimated Difference"))
@@ -286,8 +290,8 @@ grDevices::cairo_pdf(
   height = 8,
 )
 ggarrange(h24_affect_plot_w[[9]], h24_affect_plot_w[[13]], nrow = 2, legend = "none",
-          labels = c("A. High Arousal Positive Affect at Within-person level", 
-                     "B. Low Arousal Negative Affect at Within-person level"),
+          labels = c("A. LPA Reallocations and High Arousal Positive Affect at Within-person level", 
+                     "B. MVPA Reallocations and Low Arousal Negative Affect at Within-person level"),
           hjust = 0,
           font.label = list(size = 12, color = "black", family = "Arial Narrow")
 )
@@ -317,7 +321,9 @@ h24_affect_plot_b_supp <- foreach(i = 1:20,
                                                  labeller = label_bquote(cols = .(as.character(From)) %<-% minutes %->% .(as.character(To))),
                                                  strip.position = "bottom", ncol = 4) +
                                       scale_x_continuous(limits = c(-60, 60),
-                                                         breaks = c(-60, 0, 60)) +
+                                                         breaks = c(-60, 0, 60),
+                                                         labels = c(60, 0, 60)
+                                      ) +
                                       scale_y_continuous(limits = c(-2.4, 2.4),
                                                          breaks = c(-2, -1, 0, 1, 2),
                                                          sec.axis = sec_axis(~ . / rg[i, "smean"], name = paste0("Standardised Estimated Difference"))
@@ -365,14 +371,16 @@ h24_affect_plot_w_supp <- foreach(i = 21:40,
                                                 show.legend = FALSE) +
                                       scale_colour_manual(values = col) +
                                       scale_fill_manual(values = colf) +
-                                      labs(x = paste0("Difference in ", rg[i, "parts"], " at Between-person Level"),
-                                           y = paste0("Estimated Difference"),
-                                           title =  paste0("Reallocation of ", rg[i, "parts"], " and ", rg[i, "resp"], " at Between-person Level")) +
+                                      labs(x = paste0("Channge in ", rg[i, "parts"], " at Within-person Level"),
+                                           y = paste0("Estimated Channge"),
+                                           title =  paste0("Reallocation of ", rg[i, "parts"], " and ", rg[i, "resp"], " at Within-person Level")) +
                                       facet_wrap(ggplot2::vars(From, To),
                                                  labeller = label_bquote(cols = .(as.character(From)) %<-% minutes %->% .(as.character(To))),
                                                  strip.position = "bottom", ncol = 4) +
                                       scale_x_continuous(limits = c(-60, 60),
-                                                         breaks = c(-60, 0, 60)) +
+                                                         breaks = c(-60, 0, 60),
+                                                         labels = c(60, 0, 60)
+                                      ) +
                                       scale_y_continuous(limits = c(-0.35, 0.35),
                                                          breaks = c(-0.25, 0, 0.25),
                                                          sec.axis = sec_axis(~ . / rg[i, "smean"], name = paste0("Standardised Estimated Difference"))
@@ -429,7 +437,9 @@ h24_affect_plot_b_slides <- foreach(i = 1:20,
                                                   labeller = label_bquote(cols = .(as.character(From)) %<-% minutes %->% .(as.character(To))),
                                                   strip.position = "bottom", ncol = 4) +
                                        scale_x_continuous(limits = c(-60, 60),
-                                                          breaks = c(-60, 0, 60)) +
+                                                          breaks = c(-60, 0, 60),
+                                                          labels = c(60, 0, 60)
+                                       ) +
                                        scale_y_continuous(limits = c(-2.4, 2.4),
                                                           breaks = c(-2, -1, 0, 1, 2),
                                                           sec.axis = sec_axis(~ . / rg[i, "smean"], name = paste0("Standardised Estimated Difference"))
@@ -471,13 +481,15 @@ h24_affect_plot_w_slides <- foreach(i = 21:40,
                                            show.legend = FALSE) +
                                  scale_colour_manual(values = col) +
                                  scale_fill_manual(values = colf) +
-                                 labs(x = paste0("Difference in ", rg[i, "parts"], " at Within-person Level"),
-                                      y = paste0("Estimated Difference")) +
+                                 labs(x = paste0("Channge in ", rg[i, "parts"], " at Within-person Level"),
+                                      y = paste0("Estimated Channge")) +
                                  facet_wrap(ggplot2::vars(From, To),
                                             labeller = label_bquote(cols = .(as.character(From)) %<-% minutes %->% .(as.character(To))),
                                             strip.position = "bottom", ncol = 4) +
                                  scale_x_continuous(limits = c(-60, 60),
-                                                    breaks = c(-60, 0, 60)) +
+                                                    breaks = c(-60, 0, 60),
+                                                    labels = c(60, 0, 60)
+                                 ) +
                                  scale_y_continuous(limits = c(-0.35, 0.35),
                                                     breaks = c(-0.25, 0, 0.25),
                                                     sec.axis = sec_axis(~ . / rg[i, "smean"], name = paste0("Standardised Estimated Difference"))

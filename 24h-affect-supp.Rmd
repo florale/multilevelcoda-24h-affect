@@ -11,7 +11,7 @@ output:
     collapsed: no
     smooth_scroll: no
     toc_depth: 4
-    fig_width: 8
+    fig_width: 9
     fig_height: 4
     fig_caption: yes
     number_sections: true
@@ -31,7 +31,7 @@ for the manuscript:
 * SB = Sedentary Behaviour
 
 ```{r, echo=FALSE, message=FALSE}
-source("24h-affect-results-setup.R")
+source("24h-affect-supp.R")
 ```
 
 # Statistics for 30-minute Reallocation

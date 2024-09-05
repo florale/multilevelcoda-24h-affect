@@ -1,10 +1,10 @@
 source("24h-affect-utils.R")
 
-# brmcoda
-m_hapa <- readRDS(paste0(outputdir, "m_hapa", ".RDS"))
-m_lapa <- readRDS(paste0(outputdir, "m_lapa", ".RDS"))
-m_hana <- readRDS(paste0(outputdir, "m_hana", ".RDS"))
-m_lana <- readRDS(paste0(outputdir, "m_lana", ".RDS"))
+# # brmcoda
+# m_hapa <- readRDS(paste0(outputdir, "m_hapa", ".RDS"))
+# m_lapa <- readRDS(paste0(outputdir, "m_lapa", ".RDS"))
+# m_hana <- readRDS(paste0(outputdir, "m_hana", ".RDS"))
+# m_lana <- readRDS(paste0(outputdir, "m_lana", ".RDS"))
 
 # substitution
 m_hapa_sub <- readRDS(paste0(outputdir, "m_hapa_sub", ".RDS"))
@@ -32,8 +32,9 @@ h24_affect_sub_list <- lapply(list(
 })
 
 # graphs
-h24_affect_plot_b <- readRDS(paste0(outputdir, "h24_affect_plot_b", ".RDS"))
-h24_affect_plot_w <- readRDS(paste0(outputdir, "h24_affect_plot_w", ".RDS"))
+h24_affect_plot_b <- readRDS(paste0(outputdir, "h24_affect_plot_b_supp", ".RDS"))
+h24_affect_plot_w <- readRDS(paste0(outputdir, "h24_affect_plot_w_supp", ".RDS"))
+rg <- readRDS(paste0(outputdir, "h24_affect_rg", ".RDS"))
 
 names <- c(`Sleepg` = "Sleep",
            `WAKEg` = "Wake Time in Bed",

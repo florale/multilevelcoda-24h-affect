@@ -66,6 +66,8 @@ rg$smean <- ifelse(level == "within" & sub_models == "m_lapa_sub", sd(dw[Survey 
 rg$smean <- ifelse(level == "within" & sub_models == "m_hana_sub", sd(dw[Survey == "Evening"]$WNegAffHADayLead, na.rm = T), rg$smean)
 rg$smean <- ifelse(level == "within" & sub_models == "m_lana_sub", sd(dw[Survey == "Evening"]$WNegAffLADayLead, na.rm = T), rg$smean)
 
+saveRDS(rg, paste0(outputdir, "h24_affect_rg", ".RDS"))
+
 # between -------------------
 sub_models_b <- list()
 

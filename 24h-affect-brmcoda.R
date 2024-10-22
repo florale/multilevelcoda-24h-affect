@@ -211,3 +211,16 @@ m0_lana <- brmcoda(cilrw,
                    iter = 6000, chains = 8, cores = 8, seed = 123, warmup = 1000,
                    backend = "cmdstanr", save_pars = save_pars(all = TRUE))
 saveRDS(m0_lana, paste0(outputdir, "m0_lana", ".RDS"))
+
+
+# pivot coordinates
+m_hapa_pc <- pivot_coord(m_hapa, method = "rotate")
+m_lapa_pc <- pivot_coord(m_lapa, method = "rotate")
+m_hana_pc <- pivot_coord(m_hana, method = "rotate")
+m_lana_pc <- pivot_coord(m_lana, method = "rotate")
+
+summary(m_hapa_pc)
+summary(m_lapa_pc)
+summary(m_hana_pc)
+summary(m_lana_pc)
+

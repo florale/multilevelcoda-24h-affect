@@ -35,7 +35,14 @@ d <- rbind(shs[, .(
   BSTRESS, WSTRESS, WSTRESSDay, WSTRESSNextDay, WSTRESSLag1,
   
   # Behaviours
-  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg
+  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg,
+  
+  # adj
+  HAPPY, CHEERFUL, ENTHUSIASTIC,
+  RELAXED, CALM, ATEASE,
+  
+  AFRAID, NERVOUS, IRRITABLE,
+  SAD, LONELY, GUILTY
 )],
 destress[, .(
   ID, UID = paste0("D", ID), StudyID = "D",
@@ -63,7 +70,15 @@ destress[, .(
   BSTRESS, WSTRESS, WSTRESSDay, WSTRESSNextDay, WSTRESSLag1,
   
   # Behaviours
-  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg
+  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg,
+  
+  # adj
+  HAPPY, CHEERFUL, ENTHUSIASTIC,
+  RELAXED, CALM, ATEASE,
+  
+  AFRAID, NERVOUS, IRRITABLE,
+  SAD, LONELY, GUILTY
+  
 )],
 aces[, .(
   ID, UID = paste0("A", ID), StudyID = "A",
@@ -91,7 +106,15 @@ aces[, .(
   BSTRESS, WSTRESS, WSTRESSDay, WSTRESSNextDay, WSTRESSLag1,
   
   # Behaviours
-  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg
+  Sleepg, WAKEg, MVPAg, LPAg, SBg, TotalDayg,
+  
+  # adj
+  HAPPY, CHEERFUL, ENTHUSIASTIC,
+  RELAXED, CALM, ATEASE,
+  
+  AFRAID, NERVOUS, IRRITABLE,
+  SAD, LONELY, GUILTY
+  
 )]
 )
 d[, USURVEYUID := 1:.N, by = .(UID)]
@@ -393,4 +416,37 @@ nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UI
 # saveRDS(d, paste0(outputdir, "d", ".RDS"))
 # saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))
 # saveRDS(cilrs, paste0(outputdir, "cilrs", ".RDS"))
+
+hapa_adj <- c("HAPPY", "CHEERFUL", "ENTHUSIASTIC")
+lapa_adj <- c("RELAXED", "CALM", "ATEASE")
+hana_adj <- c("AFRAID", "NERVOUS", "IRRITABLE")
+lana_adj <- c("SAD", "LONELY", "GUILTY")
+affect_adj <- c(hapa_adj, lapa_adj, hana_adj, lana_adj)
+
+# reliability
+d[, paste0(affect_adj, "_day") := lapply(.SD, function(x) mean(x, na.rm = TRUE)), by = .(UID, SurveyDay), .SDcols = affect_adj]
+
+multilevelTools::omegaSEM(
+  items = paste0(hapa_adj, "_day"),
+  id = "UID",
+  data = d,
+  savemodel = FALSE)
+
+multilevelTools::omegaSEM(
+  items = paste0(lapa_adj, "_day"),
+  id = "UID",
+  data = d,
+  savemodel = FALSE)
+
+multilevelTools::omegaSEM(
+  items = paste0(hana_adj, "_day"),
+  id = "UID",
+  data = d,
+  savemodel = FALSE)
+
+multilevelTools::omegaSEM(
+  items = paste0(lana_adj, "_day"),
+  id = "UID",
+  data = d,
+  savemodel = FALSE)
 

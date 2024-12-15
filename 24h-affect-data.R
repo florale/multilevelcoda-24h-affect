@@ -217,7 +217,7 @@ View(d[, .(ID, UID, USURVEYUID, SurveyDay, Survey, PosAffHADay, PosAffHADayLag,
            PosAffHALead, WPosAffHADay, WPosAffHADayLag, PosAffHADayLead, Sleepg,
            Age, Female,  RACE3G, BMI, SES_1, StudyID, WeekDay, CurrentWork,
            CurrentSchool, SmokingStatus, AUDITCat
-           )])
+)])
 
 # recode covariates
 d[, RACE3G := NA]
@@ -263,10 +263,10 @@ dw[which(SBg == 0), "ID"]
 dw <- dw[ WAKEg > 0]
 
 cilrw <- complr(dw,
-                 sbp = sbp,
-                 parts = part_ww,
-                 idvar = "UID",
-                 total = 1440)
+                sbp = sbp,
+                parts = part_ww,
+                idvar = "UID",
+                total = 1440)
 saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))
 
 # recheck
@@ -288,10 +288,10 @@ ds[which(SBg == 0), "ID"]
 ds <- ds[ WAKEg > 0]
 
 cilrs <- complr(ds,
-                 sbp = sbp,
-                 parts = part_ss,
-                 idvar = "UID",
-                 total = 1440)
+                sbp = sbp,
+                parts = part_ss,
+                idvar = "UID",
+                total = 1440)
 saveRDS(cilrs, paste0(outputdir, "cilrs", ".RDS"))
 
 ## Descriptive stats ---------------------------
@@ -360,58 +360,58 @@ multilevelTools::iccMixed(c("LPAg"), id = "UID", data = d[Survey == "Evening"])
 multilevelTools::iccMixed(c("SBg"), id = "UID", data = d[Survey == "Evening"])
 
 # nobs
-nrow(d[Survey == "Evening"][complete.cases(PosAffHADayLead)])
-nrow(d[Survey == "Evening"][complete.cases(PosAffLADayLead)])
-nrow(d[Survey == "Evening"][complete.cases(NegAffHADayLead)])
-nrow(d[Survey == "Evening"][complete.cases(NegAffLADayLead)])
-nrow(d[Survey == "Evening"][complete.cases(STRESSDayLead)])
+nrow(dw[Survey == "Evening"][complete.cases(PosAffHADayLead)])
+nrow(dw[Survey == "Evening"][complete.cases(PosAffLADayLead)])
+nrow(dw[Survey == "Evening"][complete.cases(NegAffHADayLead)])
+nrow(dw[Survey == "Evening"][complete.cases(NegAffLADayLead)])
+nrow(dw[Survey == "Evening"][complete.cases(STRESSDayLead)])
 
-nrow(d[Survey == "Evening"][complete.cases(Sleepg)])
-nrow(d[Survey == "Evening"][complete.cases(WAKEg)])
-nrow(d[Survey == "Evening"][complete.cases(MVPAg)])
-nrow(d[Survey == "Evening"][complete.cases(LPAg)])
-nrow(d[Survey == "Evening"][complete.cases(SBg)])
+nrow(dw[Survey == "Evening"][complete.cases(Sleepg)])
+nrow(dw[Survey == "Evening"][complete.cases(WAKEg)])
+nrow(dw[Survey == "Evening"][complete.cases(MVPAg)])
+nrow(dw[Survey == "Evening"][complete.cases(LPAg)])
+nrow(dw[Survey == "Evening"][complete.cases(SBg)])
 
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffHADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffLADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffHADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffLADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(STRESSDayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffHADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffLADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffHADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffLADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(STRESSDayLead)])
 
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(Sleepg)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(WAKEg)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(MVPAg)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(LPAg)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(SBg)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(Sleepg)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(WAKEg)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(MVPAg)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(LPAg)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(SBg)])
 
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffHADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffLADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffHADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffLADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(STRESSDayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffHADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffLADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffHADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffLADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(STRESSDayLead)])
 
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(Sleepg)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(WAKEg)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(MVPAg)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(LPAg)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(SBg)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(Sleepg)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(WAKEg)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(MVPAg)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(LPAg)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(SBg)])
 
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffHADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffLADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffHADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffLADayLead)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(STRESSDayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffHADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffLADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffHADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffLADayLead)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(STRESSDayLead)])
 
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(Sleepg)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(WAKEg)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(MVPAg)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(LPAg)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(SBg)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(Sleepg)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(WAKEg)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(MVPAg)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(LPAg)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(SBg)])
 
-nrow(d[Survey == "Evening"][complete.cases(Age)][!duplicated(UID)])
-nrow(d[Survey == "Evening" & StudyID == "A"][complete.cases(Age)][!duplicated(UID)])
-nrow(d[Survey == "Evening" & StudyID == "D"][complete.cases(Age)][!duplicated(UID)])
-nrow(d[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UID)])
+nrow(dw[Survey == "Evening"][complete.cases(Age)][!duplicated(UID)])
+nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(Age)][!duplicated(UID)])
+nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(Age)][!duplicated(UID)])
+nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UID)])
 
 # saveRDS(d, paste0(outputdir, "d", ".RDS"))
 # saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))

@@ -34,6 +34,7 @@ library(latex2exp)
 
 library(htmltools)
 library(purrr)
+library(kableExtra)
 
 expand.grid.df <- function(...) Reduce(function(...) merge.data.frame(..., by = NULL, all = TRUE), list(...))
 

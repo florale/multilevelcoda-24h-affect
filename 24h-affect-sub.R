@@ -39,11 +39,11 @@ d_sub_hapa[Level == "within", SMean := round(Mean / sd(dw[Survey == "Evening"]$W
 d_sub_lapa[Level == "between", SMean := round(Mean / sd(dw[Survey == "Evening"]$BPosAffLADayLead, na.rm = T), 2)]
 d_sub_lapa[Level == "within", SMean := round(Mean / sd(dw[Survey == "Evening"]$WPosAffLADayLead, na.rm = T), 2)]
 
-d_sub_hana[Level == "between", SMean := round(Mean / sd(d[Survey == "Evening"]$BNegAffHADayLead, na.rm = T), 2)]
+d_sub_hana[Level == "between", SMean := round(Mean / sd(dw[Survey == "Evening"]$BNegAffHADayLead, na.rm = T), 2)]
 d_sub_hana[Level == "within", SMean := round(Mean / sd(d[Survey == "Evening"]$WNegAffHADayLead, na.rm = T), 2)]
 
-d_sub_lana[Level == "between", SMean := round(Mean / sd(d[Survey == "Evening"]$BNegAffLADayLead, na.rm = T), 2)]
-d_sub_lana[Level == "within", SMean := round(Mean / sd(d[Survey == "Evening"]$WNegAffLADayLead, na.rm = T), 2)]
+d_sub_lana[Level == "between", SMean := round(Mean / sd(dw[Survey == "Evening"]$BNegAffLADayLead, na.rm = T), 2)]
+d_sub_lana[Level == "within", SMean := round(Mean / sd(dw[Survey == "Evening"]$WNegAffLADayLead, na.rm = T), 2)]
 
 # read last column
 d_sub_hapa

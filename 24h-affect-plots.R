@@ -1,4 +1,4 @@
-source("24h-affect-utils.R")
+source("24h-affect-setup.R")
 
 # set up plots ----------------
 col <- c(`Sleep` = "#647F9A",
@@ -13,16 +13,16 @@ colf <- c(`Sleep` = "#647F9A",
           `LPA` = "#C08585",
           `SB` = "#D2A7A7")
 
-protan <- dichromat::dichromat(col, type = "protan")
-deutan <- dichromat::dichromat(col, type = "deutan")
-tritan <- dichromat::dichromat(col, type = "tritan")
+# protan <- dichromat::dichromat(col, type = "protan")
+# deutan <- dichromat::dichromat(col, type = "deutan")
+# tritan <- dichromat::dichromat(col, type = "tritan")
 
-# plot for comparison
-layout(matrix(1:4, nrow = 4)); par(mar = rep(1, 4))
-recolorize::plotColorPalette(col, main = "Trichromacy")
-recolorize::plotColorPalette(protan, main = "Protanopia")
-recolorize::plotColorPalette(deutan, main = "Deutanopia")
-recolorize::plotColorPalette(tritan, main = "Tritanopia")
+# # plot for comparison
+# layout(matrix(1:4, nrow = 4)); par(mar = rep(1, 4))
+# recolorize::plotColorPalette(col, main = "Trichromacy")
+# recolorize::plotColorPalette(protan, main = "Protanopia")
+# recolorize::plotColorPalette(deutan, main = "Deutanopia")
+# recolorize::plotColorPalette(tritan, main = "Tritanopia")
 
 names <- c(`Sleepg` = "Sleep",
            `WAKEg` = "Awake",
@@ -55,16 +55,17 @@ rg <- expand.grid.df(data.frame(sub_models, resp),
 rg <- rg[order(rg$level, rg$sub_models), ]
 
 # standarised coefs
+clrw <- readRDS(paste0(outputdir, "cilrw", ".RDS"))
 rg$smean <- NA
-rg$smean <- ifelse(level == "between" & sub_models == "m_hapa_sub", sd(dw[Survey == "Evening"]$BPosAffHADayLead, na.rm = T), rg$smean)
-rg$smean <- ifelse(level == "between" & sub_models == "m_lapa_sub", sd(dw[Survey == "Evening"]$BPosAffLADayLead, na.rm = T), rg$smean)
-rg$smean <- ifelse(level == "between" & sub_models == "m_hana_sub", sd(dw[Survey == "Evening"]$BNegAffHADayLead, na.rm = T), rg$smean)
-rg$smean <- ifelse(level == "between" & sub_models == "m_lana_sub", sd(dw[Survey == "Evening"]$BNegAffLADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "between" & sub_models == "m_hapa_sub", sd(clrw$data[Survey == "Evening"]$BPosAffHADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "between" & sub_models == "m_lapa_sub", sd(clrw$data[Survey == "Evening"]$BPosAffLADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "between" & sub_models == "m_hana_sub", sd(clrw$data[Survey == "Evening"]$BNegAffHADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "between" & sub_models == "m_lana_sub", sd(clrw$data[Survey == "Evening"]$BNegAffLADayLead, na.rm = T), rg$smean)
 
-rg$smean <- ifelse(level == "within" & sub_models == "m_hapa_sub", sd(dw[Survey == "Evening"]$WPosAffHADayLead, na.rm = T), rg$smean)
-rg$smean <- ifelse(level == "within" & sub_models == "m_lapa_sub", sd(dw[Survey == "Evening"]$WPosAffLADayLead, na.rm = T), rg$smean)
-rg$smean <- ifelse(level == "within" & sub_models == "m_hana_sub", sd(dw[Survey == "Evening"]$WNegAffHADayLead, na.rm = T), rg$smean)
-rg$smean <- ifelse(level == "within" & sub_models == "m_lana_sub", sd(dw[Survey == "Evening"]$WNegAffLADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "within" & sub_models == "m_hapa_sub", sd(clrw$data[Survey == "Evening"]$WPosAffHADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "within" & sub_models == "m_lapa_sub", sd(clrw$data[Survey == "Evening"]$WPosAffLADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "within" & sub_models == "m_hana_sub", sd(clrw$data[Survey == "Evening"]$WNegAffHADayLead, na.rm = T), rg$smean)
+rg$smean <- ifelse(level == "within" & sub_models == "m_lana_sub", sd(clrw$data[Survey == "Evening"]$WNegAffLADayLead, na.rm = T), rg$smean)
 
 saveRDS(rg, paste0(outputdir, "h24_affect_rg", ".RDS"))
 
@@ -121,7 +122,7 @@ h24_affect_plot_b <- foreach(i = 1:20,
                                              alpha = alpha) +
                                  geom_line(aes(colour = From), linewidth = 1) +
                                  geom_text(aes(label = Sig, colour = From), 
-                                           size = 6, nudge_x = 0.05, nudge_y = 0.2, 
+                                           size = 7, nudge_x = 0.1, nudge_y = 0.25, 
                                            show.legend = FALSE) +
                                  scale_colour_manual(values = col) +
                                  scale_fill_manual(values = colf) +
@@ -218,7 +219,7 @@ h24_affect_plot_w <- foreach(i = 21:40,
                                              alpha = alpha) +
                                  geom_line(aes(colour = From), linewidth = 1) +
                                  geom_text(aes(label = Sig, colour = From), 
-                                           size = 6, nudge_x = 0.05, nudge_y = 0.025, 
+                                           size = 7, nudge_x = 0.1, nudge_y = 0.05, 
                                            show.legend = FALSE) +
                                  scale_colour_manual(values = col) +
                                  scale_fill_manual(values = colf) +
@@ -312,7 +313,7 @@ h24_affect_plot_b_supp <- foreach(i = 1:20,
                                                   alpha = alpha) +
                                       geom_line(aes(colour = From), linewidth = 1) +
                                       geom_text(aes(label = Sig, colour = From), 
-                                                size = 6, nudge_x = 0.05, nudge_y = 0.2, 
+                                                size = 7, nudge_x = 0.1, nudge_y = 0.25, 
                                                 show.legend = FALSE) +
                                       scale_colour_manual(values = col) +
                                       scale_fill_manual(values = colf) +
@@ -369,7 +370,7 @@ h24_affect_plot_w_supp <- foreach(i = 21:40,
                                                   alpha = alpha) +
                                       geom_line(aes(colour = From), linewidth = 1) +
                                       geom_text(aes(label = Sig, colour = From), 
-                                                size = 6, nudge_x = 0.05, nudge_y = 0.025, 
+                                                size = 7, nudge_x = 0.1, nudge_y = 0.05, 
                                                 show.legend = FALSE) +
                                       scale_colour_manual(values = col) +
                                       scale_fill_manual(values = colf) +
@@ -429,7 +430,7 @@ h24_affect_plot_b_slides <- foreach(i = 1:20,
                                                    alpha = alpha) +
                                        geom_line(aes(colour = From), linewidth = 1) +
                                        geom_text(aes(label = Sig, colour = From), 
-                                                 size = 6, nudge_x = 0.05, nudge_y = 0.2, 
+                                                 size = 7, nudge_x = 0.1, nudge_y = 0.25, 
                                                  show.legend = FALSE) +
                                        scale_colour_manual(values = col) +
                                        scale_fill_manual(values = colf) +
@@ -479,7 +480,7 @@ h24_affect_plot_w_slides <- foreach(i = 21:40,
                                              alpha = alpha) +
                                  geom_line(aes(colour = From), linewidth = 1) +
                                  geom_text(aes(label = Sig, colour = From), 
-                                           size = 6, nudge_x = 0.05, nudge_y = 0.025, 
+                                           size = 7, nudge_x = 0.1, nudge_y = 0.05, 
                                            show.legend = FALSE) +
                                  scale_colour_manual(values = col) +
                                  scale_fill_manual(values = colf) +

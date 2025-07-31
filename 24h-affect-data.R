@@ -1,10 +1,14 @@
-source("24h-affect-utils.R")
+source("24h-affect-setup.R")
 
 shs <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/StressHealthStudy/SHS Research Interns/Data/shs_all_ggir.RDS"))
 destress <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/DESTRESSStudy/Data/destress_all_ggir.RDS"))
 aces <- as.data.table(readRDS("/Volumes/shared/Behavioral-med-lab/ACESStudy/Data/aces_all_ggir.RDS"))
 
 parts <- c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg")
+
+shs[, .(Survey, SLEEPQUALITY, SDI_TScore)]
+destress[, .(Survey, SLEEPQUALITY, SDI_TScore)]
+aces[, .(Survey, SLEEPQUALITY, SDI_TScore)]
 
 setnames(shs, "Sex", "Female")
 setnames(shs, "RACE3G", "RACE")
@@ -42,7 +46,9 @@ d <- rbind(shs[, .(
   RELAXED, CALM, ATEASE,
   
   AFRAID, NERVOUS, IRRITABLE,
-  SAD, LONELY, GUILTY
+  SAD, LONELY, GUILTY,
+  
+  SLEEPQUALITY, SDI_TScore
 )],
 destress[, .(
   ID, UID = paste0("D", ID), StudyID = "D",
@@ -77,7 +83,9 @@ destress[, .(
   RELAXED, CALM, ATEASE,
   
   AFRAID, NERVOUS, IRRITABLE,
-  SAD, LONELY, GUILTY
+  SAD, LONELY, GUILTY,
+  
+  SLEEPQUALITY, SDI_TScore
   
 )],
 aces[, .(
@@ -113,11 +121,20 @@ aces[, .(
   RELAXED, CALM, ATEASE,
   
   AFRAID, NERVOUS, IRRITABLE,
-  SAD, LONELY, GUILTY
+  SAD, LONELY, GUILTY,
+  
+  SLEEPQUALITY, SDI_TScore
   
 )]
 )
+
 d[, USURVEYUID := 1:.N, by = .(UID)]
+
+# recalculate affect values
+d[, PosAffHA := rowMeans(.SD, na.rm = TRUE), .SDcols = c("HAPPY", "CHEERFUL", "ENTHUSIASTIC")]
+d[, PosAffLA := rowMeans(.SD, na.rm = TRUE), .SDcols = c("RELAXED", "CALM", "ATEASE")]
+d[, NegAffHA := rowMeans(.SD, na.rm = TRUE), .SDcols = c("AFRAID", "NERVOUS", "IRRITABLE")]
+d[, NegAffLA := rowMeans(.SD, na.rm = TRUE), .SDcols = c("SAD", "LONELY", "GUILTY")]
 
 # daily average outcomes
 d[, STRESSDay := mean(STRESS, na.rm = TRUE),
@@ -212,12 +229,12 @@ d[, c("WPosAffHALeadLag1", "WPosAffLALeadLag1", "WNegAffHALeadLag1", "WNegAffLAL
         ),
         on = c("UID", "USURVEYUID")]]
 
-View(d[, .(ID, UID, USURVEYUID, SurveyDay, Survey, PosAffHADay, PosAffHADayLag, 
-           STRESS, WSTRESSDayLag,
-           PosAffHALead, WPosAffHADay, WPosAffHADayLag, PosAffHADayLead, Sleepg,
-           Age, Female,  RACE3G, BMI, SES_1, StudyID, WeekDay, CurrentWork,
-           CurrentSchool, SmokingStatus, AUDITCat
-)])
+# View(d[, .(ID, UID, USURVEYUID, SurveyDay, Survey, PosAffHADay, PosAffHADayLag, 
+#            STRESS, WSTRESSDayLag,
+#            PosAffHALead, WPosAffHADay, WPosAffHADayLag, PosAffHADayLead, Sleepg,
+#            Age, Female,  RACE, BMI, SES_1, StudyID, WeekDay, CurrentWork,
+#            CurrentSchool, SmokingStatus, AUDITCat
+# )])
 
 # recode covariates
 d[, RACE3G := NA]
@@ -250,11 +267,11 @@ dw <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAg, LPAg, SBg)])]
 
 # check 0s
 any(apply(dw[, part_ww, with = FALSE], 2, function(x) x == 0))
-dw[which(Sleepg == 0), "ID"]
-dw[which(WAKEg == 0), "ID"]
-dw[which(MVPAg == 0), "ID"]
-dw[which(LPAg == 0), "ID"]
-dw[which(SBg == 0), "ID"]
+dw[which(Sleepg == 0), "UID"]
+dw[which(WAKEg == 0), "UID"]
+dw[which(MVPAg == 0), "UID"]
+dw[which(LPAg == 0), "UID"]
+dw[which(SBg == 0), "UID"]
 
 # composition_imp <- lrEM(d[, parts, with = FALSE], label = 0,dl = rep(1, 4), ini.cov = "multRepl")
 # d <- cbind(d[, -parts, with = FALSE], composition_imp)
@@ -279,11 +296,11 @@ ds <- d[complete.cases(d[, .(Sleepg, WAKEg, MVPAgDayLead, LPAgDayLead, SBgDayLea
 
 # check 0s
 any(apply(ds[, part_ss, with = FALSE], 2, function(x) x == 0))
-ds[which(Sleepg == 0), "ID"]
-ds[which(WAKEg == 0), "ID"]
-ds[which(MVPAg == 0), "ID"]
-ds[which(LPAg == 0), "ID"]
-ds[which(SBg == 0), "ID"]
+ds[which(Sleepg == 0), "UID"]
+ds[which(WAKEg == 0), "UID"]
+ds[which(MVPAg == 0), "UID"]
+ds[which(LPAg == 0), "UID"]
+ds[which(SBg == 0), "UID"]
 
 ds <- ds[ WAKEg > 0]
 
@@ -294,14 +311,16 @@ cilrs <- complr(ds,
                 total = 1440)
 saveRDS(cilrs, paste0(outputdir, "cilrs", ".RDS"))
 
-## Descriptive stats ---------------------------
+# ## Descriptive stats ---------------------------
+cilrw <- readRDS(paste0(outputdir, "cilrw", ".RDS"))
 
-egltable(c("Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
-           "PosAffHADayLead","PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead",
-           
-           "Age", "BMI", "SES_1", "Female", 
-           "CurrentWork","CurrentSchool","DEDUUniPlus", "SmokingStatus",
-           "RACE3G", "AUDITCat", "rMEQ"), strict = FALSE, g = "StudyID" ,  data = d[!duplicated(UID)])
+# egltable(c(
+#   # "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
+#   #          "PosAffHADayLead","PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead",
+#   "Age", "BMI", "SES_1", "Female",
+#   "CurrentWork","CurrentSchool","DEDUUniPlus", "SmokingStatus",
+#   "RACE", "AUDITCat", "rMEQ", "SDI_TScore"),
+#   strict = FALSE, g = "StudyID" ,  data = cilrw$data[!duplicated(UID)])
 
 # descriptive stats
 fvars <- c("Female", "SmokingStatus", "CurrentWork", "AUDITCat", "DEDUUniPlus", "CurrentSchool")
@@ -309,12 +328,13 @@ egltable(c(
   # "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
   # "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
   # "SleepLight", "SleepDeep", "SleepREM", "WAKE", "TIBz",
-  # "WeekDay", 
+  # "WeekDay",
   "SmokingStatus", "CurrentWork", "AUDITCat", "DEDUUniPlus", "CurrentSchool",
-  "Age", "Female", "RACE3G", "BMI", "SES_1" ),
+  "Age", "Female", "RACE3G", "BMI", "SES_1", "SDI_TScore"),
   idvar = "UID", g = "StudyID",
-  data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars][!duplicated(UID)]
+  data = cilrw$data[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars][!duplicated(UID)]
 )
+
 egltable(c(
   "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
   "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
@@ -322,131 +342,177 @@ egltable(c(
   "WeekDay"
 ),
 idvar = "UID", g = "StudyID",
-data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars]
+data = cilrw$data[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars]
 )
+
 egltable(c(
   # "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
   # "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
   # "SleepLight", "SleepDeep", "SleepREM", "WAKE", "TIBz",
-  # "WeekDay", 
+  # "WeekDay",
   "SmokingStatus", "CurrentWork", "AUDITCat", "DEDUUniPlus", "CurrentSchool",
-  "Age", "Female", "RACE3G", "BMI", "SES_1" ),
-  idvar = "UID", 
-  data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars][!duplicated(UID)]
+  "Age", "Female", "RACE3G", "BMI", "SES_1", "SDI_TScore"),
+  idvar = "UID",
+  data = cilrw$data[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars][!duplicated(UID)]
 )
+
 egltable(c(
   "PosAffHADayLead", "PosAffLADayLead", "NegAffHADayLead", "NegAffLADayLead", "STRESSDayLead",
   "Sleepg", "WAKEg", "MVPAg", "LPAg", "SBg",
   # "SleepLight", "SleepDeep", "SleepREM", "WAKE", "TIBz",
   "WeekDay"
 ),
-idvar = "UID", 
-data = d[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars]
+idvar = "UID",
+data = cilrw$data[Survey == "Evening"][, (fvars) := lapply(.SD, as.factor), .SDcols = fvars]
 )
 
-summary(cilrw)
+# summary(cilrw)
 
-# ICC
-multilevelTools::iccMixed(c("PosAffHADayLead"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("PosAffLADayLead"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("NegAffHADayLead"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("NegAffLADayLead"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("STRESSDayLead"), id = "UID", data = d[Survey == "Evening"])
+# # ICC
+# multilevelTools::iccMixed(c("PosAffHADayLead"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("PosAffLADayLead"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("NegAffHADayLead"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("NegAffLADayLead"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("STRESSDayLead"), id = "UID", data = d[Survey == "Evening"])
 
-multilevelTools::iccMixed(c("Sleepg"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("WAKEg"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("MVPAg"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("LPAg"), id = "UID", data = d[Survey == "Evening"])
-multilevelTools::iccMixed(c("SBg"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("Sleepg"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("WAKEg"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("MVPAg"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("LPAg"), id = "UID", data = d[Survey == "Evening"])
+# multilevelTools::iccMixed(c("SBg"), id = "UID", data = d[Survey == "Evening"])
 
-# nobs
-nrow(dw[Survey == "Evening"][complete.cases(PosAffHADayLead)])
-nrow(dw[Survey == "Evening"][complete.cases(PosAffLADayLead)])
-nrow(dw[Survey == "Evening"][complete.cases(NegAffHADayLead)])
-nrow(dw[Survey == "Evening"][complete.cases(NegAffLADayLead)])
-nrow(dw[Survey == "Evening"][complete.cases(STRESSDayLead)])
+# # nobs
+# nrow(dw[Survey == "Evening"][complete.cases(PosAffHADayLead)])
+# nrow(dw[Survey == "Evening"][complete.cases(PosAffLADayLead)])
+# nrow(dw[Survey == "Evening"][complete.cases(NegAffHADayLead)])
+# nrow(dw[Survey == "Evening"][complete.cases(NegAffLADayLead)])
+# nrow(dw[Survey == "Evening"][complete.cases(STRESSDayLead)])
 
-nrow(dw[Survey == "Evening"][complete.cases(Sleepg)])
-nrow(dw[Survey == "Evening"][complete.cases(WAKEg)])
-nrow(dw[Survey == "Evening"][complete.cases(MVPAg)])
-nrow(dw[Survey == "Evening"][complete.cases(LPAg)])
-nrow(dw[Survey == "Evening"][complete.cases(SBg)])
+# nrow(dw[Survey == "Evening"][complete.cases(Sleepg)])
+# nrow(dw[Survey == "Evening"][complete.cases(WAKEg)])
+# nrow(dw[Survey == "Evening"][complete.cases(MVPAg)])
+# nrow(dw[Survey == "Evening"][complete.cases(LPAg)])
+# nrow(dw[Survey == "Evening"][complete.cases(SBg)])
 
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffHADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffLADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffHADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffLADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(STRESSDayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffHADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(PosAffLADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffHADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(NegAffLADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(STRESSDayLead)])
 
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(Sleepg)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(WAKEg)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(MVPAg)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(LPAg)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(SBg)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(Sleepg)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(WAKEg)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(MVPAg)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(LPAg)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(SBg)])
 
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffHADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffLADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffHADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffLADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(STRESSDayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffHADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(PosAffLADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffHADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(NegAffLADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(STRESSDayLead)])
 
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(Sleepg)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(WAKEg)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(MVPAg)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(LPAg)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(SBg)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(Sleepg)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(WAKEg)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(MVPAg)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(LPAg)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(SBg)])
 
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffHADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffLADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffHADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffLADayLead)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(STRESSDayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffHADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(PosAffLADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffHADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(NegAffLADayLead)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(STRESSDayLead)])
 
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(Sleepg)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(WAKEg)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(MVPAg)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(LPAg)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(SBg)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(Sleepg)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(WAKEg)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(MVPAg)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(LPAg)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(SBg)])
 
-nrow(dw[Survey == "Evening"][complete.cases(Age)][!duplicated(UID)])
-nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(Age)][!duplicated(UID)])
-nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(Age)][!duplicated(UID)])
-nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UID)])
+# nrow(dw[Survey == "Evening"][complete.cases(Age)][!duplicated(UID)])
+# nrow(dw[Survey == "Evening" & StudyID == "A"][complete.cases(Age)][!duplicated(UID)])
+# nrow(dw[Survey == "Evening" & StudyID == "D"][complete.cases(Age)][!duplicated(UID)])
+# nrow(dw[Survey == "Evening" & StudyID == "S"][complete.cases(Age)][!duplicated(UID)])
 
-# saveRDS(d, paste0(outputdir, "d", ".RDS"))
-# saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))
-# saveRDS(cilrs, paste0(outputdir, "cilrs", ".RDS"))
+# # saveRDS(d, paste0(outputdir, "d", ".RDS"))
+# # saveRDS(cilrw, paste0(outputdir, "cilrw", ".RDS"))
+# # saveRDS(cilrs, paste0(outputdir, "cilrs", ".RDS"))
 
-hapa_adj <- c("HAPPY", "CHEERFUL", "ENTHUSIASTIC")
-lapa_adj <- c("RELAXED", "CALM", "ATEASE")
-hana_adj <- c("AFRAID", "NERVOUS", "IRRITABLE")
-lana_adj <- c("SAD", "LONELY", "GUILTY")
-affect_adj <- c(hapa_adj, lapa_adj, hana_adj, lana_adj)
+# hapa_adj <- c("HAPPY", "CHEERFUL", "ENTHUSIASTIC")
+# lapa_adj <- c("RELAXED", "CALM", "ATEASE")
+# hana_adj <- c("AFRAID", "NERVOUS", "IRRITABLE")
+# lana_adj <- c("SAD", "LONELY", "GUILTY")
+# affect_adj <- c(hapa_adj, lapa_adj, hana_adj, lana_adj)
 
-# reliability
-d[, paste0(affect_adj, "_day") := lapply(.SD, function(x) mean(x, na.rm = TRUE)), by = .(UID, SurveyDay), .SDcols = affect_adj]
+# # reliability
+# d[, paste0(affect_adj, "_day") := lapply(.SD, function(x) mean(x, na.rm = TRUE)), by = .(UID, SurveyDay), .SDcols = affect_adj]
 
-multilevelTools::omegaSEM(
-  items = paste0(hapa_adj, "_day"),
-  id = "UID",
-  data = d,
-  savemodel = FALSE)
+# multilevelTools::omegaSEM(
+#   items = paste0(hapa_adj, "_day"),
+#   id = "UID",
+#   data = d,
+#   savemodel = FALSE)
 
-multilevelTools::omegaSEM(
-  items = paste0(lapa_adj, "_day"),
-  id = "UID",
-  data = d,
-  savemodel = FALSE)
+# multilevelTools::omegaSEM(
+#   items = paste0(lapa_adj, "_day"),
+#   id = "UID",
+#   data = d,
+#   savemodel = FALSE)
 
-multilevelTools::omegaSEM(
-  items = paste0(hana_adj, "_day"),
-  id = "UID",
-  data = d,
-  savemodel = FALSE)
+# multilevelTools::omegaSEM(
+#   items = paste0(hana_adj, "_day"),
+#   id = "UID",
+#   data = d,
+#   savemodel = FALSE)
 
-multilevelTools::omegaSEM(
-  items = paste0(lana_adj, "_day"),
-  id = "UID",
-  data = d,
-  savemodel = FALSE)
+# multilevelTools::omegaSEM(
+#   items = paste0(lana_adj, "_day"),
+#   id = "UID",
+#   data = d,
+#   savemodel = FALSE)
 
+# CFA ---------
+library(lavaan)
+library(effectsize)
+library(lavaanPlot)
+
+m <- sem(model = 
+           "
+level: 1
+ HAPAw =~ HAPPY + CHEERFUL + ENTHUSIASTIC
+ LAPAw =~ RELAXED + CALM + ATEASE
+ HANAw =~ AFRAID + NERVOUS + IRRITABLE
+ LANAw =~ SAD + LONELY + GUILTY
+level: 2
+  HAPAb =~ HAPPY + CHEERFUL + ENTHUSIASTIC
+  LAPAb =~ RELAXED + CALM + ATEASE
+  HANAb =~ AFRAID + NERVOUS + IRRITABLE
+  LANAb =~ SAD + LONELY + GUILTY
+", data = d, cluster = "UID")
+
+summary(m, fit.measures=TRUE, standardized=TRUE)
+fitMeasures(m)
+
+# interpret(fitMeasures(m), rules = "byrne1994")
+# interpret_chisq(m, rules = "byrne1994")
+
+(plot_affect_cfa <- lavaanPlot(model = m, graph_options = list(layout = "circo"),
+                              node_options = list(shape = "box", fontname = "Helvetica", fontsize = 20),
+                              edge_options = list(color = "grey", fontsize = 20), 
+                              coefs = TRUE, 
+                              covs = TRUE,
+                              stars = TRUE, digits = 1))
+
+(plot_affect_cfa_cov <- lavaanPlot(model = m, graph_options = list(layout = "circo"),
+                               node_options = list(shape = "box", fontname = "Helvetica", fontsize = 20),
+                               edge_options = list(color = "grey", fontsize = 20), 
+                               coefs = TRUE, 
+                               covs = TRUE,
+                               stars = TRUE, digits = 1))
+
+embed_plot_pdf(plot_affect_cfa, paste0(outputdir, "plot_affect_cfa", ".pdf"), width = 600)
+save_png(plot_affect_cfa, paste0(outputdir, "plot_affect_cfa", ".png"), width = 600)
+
+embed_plot_pdf(plot_affect_cfa_cov, paste0(outputdir, "plot_affect_cfa_cov", ".pdf"), width = 600)
+save_png(plot_affect_cfa_cov, paste0(outputdir, "plot_affect_cfa_cov", ".png"), width = 600)

@@ -31,6 +31,7 @@ library(stats)
 library(patchwork)
 library(hrbrthemes)
 library(latex2exp)
+library(posterior)
 
 library(htmltools)
 library(purrr)
@@ -38,5 +39,10 @@ library(kableExtra)
 
 expand.grid.df <- function(...) Reduce(function(...) merge.data.frame(..., by = NULL, all = TRUE), list(...))
 
-outputdir <- "/Users/florale/Library/CloudStorage/OneDrive-MonashUniversity/PhD/projects/multilevelcoda-24h/multilevelcoda-24h-affect/data/"
+if (Sys.info()[["user"]] %in% c("florale")) {
+outputdir <- "/Users/florale/Library/CloudStorage/OneDrive-Personal/monash/projects/multilevelcoda-24h/multilevelcoda-24h-affect/data/"
+} else if (Sys.info()[["user"]] %in% c("flee0016")) {
+outputdir <- "/Users/flee0016/Library/CloudStorage/OneDrive-Personal/monash/projects/multilevelcoda-24h/multilevelcoda-24h-affect/data/"
+}
+
 options(mc.cores = 8)

@@ -1,5 +1,5 @@
 ---
-title: "Supplementary data: Daily, prospective association of sleep, physical activity, and sedentary behaviour with affect: A Bayesian multilevel compositional data analysis "
+title: "Supplementary file: Daily, prospective association of sleep, physical activity, and sedentary behaviour with affect: A Bayesian multilevel compositional data analysis "
 author: "Flora Le (flora.le@monash.edu)"
 # date: "`r Sys.Date()`"
 output: 
@@ -21,21 +21,120 @@ This file presents the full
 results for 
 **Daily, Prospective Association of Sleep, Physical Activity, and Sedentary Behaviour with Affect: A Bayesian Multilevel Compositional Data Analysis**.
 
+```{r, echo=FALSE, message=FALSE}
+source("24h-affect-supp.R")
+```
+
+# Main analysis
+
+## Diagnostic statistics
+### ${\hat{R}}$
+```{r, echo=FALSE, message=FALSE}
+kbl(rhat_summary, align = "l", espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "transparent")
+```
+
+### Effective sample size (ESS)
+#### Bulk ESS
+```{r, echo=FALSE, message=FALSE}
+kbl(ess_bulk_summary, align = "l", espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "transparent") # #ADC7DA
+```
+
+#### Tail ESS
+```{r, echo=FALSE, message=FALSE}
+kbl(ess_tail_summary, align = "l", espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "transparent") # #ADC7DA
+```
+### MCMC draw diagnostic plots
+*Notes.* `b_bilr`s are coefficients for the between-person level effects of the 24h composition, 
+while `b_wilr`s are within-person level effects. 
+
+#### High arousal positive affect
+```{r, echo=FALSE, message=FALSE, fig.height=8, fig.align='center'}
+plot_mcmc_hapa[[1]]
+```
+```{r, echo=FALSE, message=FALSE, fig.height=7, fig.align='center'}
+plot_mcmc_hapa[[2]]
+```
+
+#### Low arousal positive affect
+```{r, echo=FALSE, message=FALSE, fig.height=8, fig.align='center'}
+plot_mcmc_lapa[[1]]
+```
+```{r, echo=FALSE, message=FALSE, fig.height=7, fig.align='center'}
+plot_mcmc_lapa[[2]]
+```
+
+#### High arousal negative affect
+```{r, echo=FALSE, message=FALSE, fig.height=8, fig.align='center'}
+plot_mcmc_hana[[1]]
+```
+```{r, echo=FALSE, message=FALSE, fig.height=7, fig.align='center'}
+plot_mcmc_hana[[2]]
+```
+
+#### Low arousal negative affect
+```{r, echo=FALSE, message=FALSE, fig.height=8, fig.align='center'}
+plot_mcmc_lana[[1]]
+```
+```{r, echo=FALSE, message=FALSE, fig.height=7, fig.align='center'}
+plot_mcmc_lana[[2]]
+```
+
+## Estimated difference for 30-minute pairwise reallocation between 24h behaviours
+Models adjusted for age, sex, race/ethnicity, subjective social status, body mass index, alcohol use, smoking status, school status, work status, weekdays/weekend, daily wear time, and previous-day affect.
+
 *Notes.* Statistical significance of individual parameters was set as Bayesian 95% posterior credible intervals (CIs) not including zero.
 
 * MVPA = Moderate-to-Vigorous Physical Activity
 * LPA = Light Physical Activity
 * SB = Sedentary Behaviour
 
-```{r, echo=FALSE, message=FALSE}
-source("24h-affect-supp.R")
+### High arousal positive affect
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_sub_list[[1]][Level == "within"], align = "l", espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#FAF7F3")
 ```
 
-## Estimated difference in for 30-minute reallocation between 24h behaviours
+### Low arousal positive affect
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_sub_list[[2]][Level == "within"], espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#EFE3E0")
+```
+
+### High arousal negative affect
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_sub_list[[3]][Level == "within"], espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#CFDAE2")
+```
+
+### Low arousal negative affect
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_sub_list[[4]][Level == "within"], espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#8399AE")
+```
+
+## Figures for within person level pairwise reallocation from 1 to 60 minutes
+
+```{r, warning=FALSE, echo = FALSE, results='asis', fig.align='center'}
+walk(h24_affect_plot_w, print)
+```
+
+# Sensitivity analysis
+Models adjusted for weekdays/weekend, daily wear time, and previous-day affect.
+
 ### High arousal positive affect
  
 ```{r, warning=FALSE, echo=FALSE}
-kbl(h24_affect_sub_list[[1]], align = "l", espacce = F) %>%
+kbl(h24_affect_sen_sub_list[[1]][Level == "within"], align = "l", espacce = F) %>%
   kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
   row_spec(0, background = "#FAF7F3")
 ```
@@ -43,7 +142,7 @@ kbl(h24_affect_sub_list[[1]], align = "l", espacce = F) %>%
 ### Low arousal positive affect
  
 ```{r, warning=FALSE, echo=FALSE}
-kbl(h24_affect_sub_list[[2]], espacce = F) %>%
+kbl(h24_affect_sen_sub_list[[2]][Level == "within"], espacce = F) %>%
   kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
   row_spec(0, background = "#EFE3E0")
 ```
@@ -51,7 +150,7 @@ kbl(h24_affect_sub_list[[2]], espacce = F) %>%
 ### High arousal negative affect
  
 ```{r, warning=FALSE, echo=FALSE}
-kbl(h24_affect_sub_list[[3]], espacce = F) %>%
+kbl(h24_affect_sub_list[[3]][Level == "within"], espacce = F) %>%
   kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
   row_spec(0, background = "#CFDAE2")
 ```
@@ -59,20 +158,42 @@ kbl(h24_affect_sub_list[[3]], espacce = F) %>%
 ### Low arousal negative affect
  
 ```{r, warning=FALSE, echo=FALSE}
-kbl(h24_affect_sub_list[[4]], espacce = F) %>%
+kbl(h24_affect_sen_sub_list[[4]][Level == "within"], espacce = F) %>%
   kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
   row_spec(0, background = "#8399AE")
 ```
 
-## Figures for reallocation from 1 to 60 minutes
-### Between person level
+# Unadjusted analysis
+Models not adjusted for covariates.
 
-```{r, warning=FALSE, echo = FALSE, results='asis', fig.align='center'}
-walk(h24_affect_plot_b, print)
+### High arousal positive affect
+ 
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_unadj_sub_list[[1]][Level == "within"], align = "l", espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#FAF7F3")
 ```
 
-### Within person level
+### Low arousal positive affect
+ 
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_unadj_sub_list[[2]][Level == "within"], espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#EFE3E0")
+```
 
-```{r, warning=FALSE, echo = FALSE, results='asis', fig.align='center'}
-walk(h24_affect_plot_w, print)
+### High arousal negative affect
+ 
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_sub_list[[3]][Level == "within"], espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#CFDAE2")
+```
+
+### Low arousal negative affect
+ 
+```{r, warning=FALSE, echo=FALSE}
+kbl(h24_affect_unadj_sub_list[[4]][Level == "within"], espacce = F) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"), fixed_thead = T) %>%
+  row_spec(0, background = "#8399AE")
 ```
